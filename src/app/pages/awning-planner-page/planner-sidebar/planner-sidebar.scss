@@ -32,68 +32,6 @@
   &--info-circle   { width: 13px; height: 13px; mask-image: url('/icons/info-circle.svg'); }
 }
 
-// ── Header ─────────────────────────────────────────────────────────────────
-
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px 12px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #ffffff;
-  flex-shrink: 0;
-  // NOT sticky here — wizard footer is sticky instead
-}
-
-.header-spacer {
-  flex: 1;
-}
-
-.sidebar-logo {
-  color: #2563eb;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.sidebar-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-
-// View mode toggle button
-.view-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  height: 28px;
-  padding: 0 10px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  font-family: inherit;
-  color: #64748b;
-  background: #f1f5f9;
-  border: 1.5px solid #e2e8f0;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-
-  &:hover {
-    background: #e2e8f0;
-    color: #374151;
-  }
-
-  &:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-  }
-}
-
 // ── Wizard: step progress strip ─────────────────────────────────────────────
 
 .wizard-progress {

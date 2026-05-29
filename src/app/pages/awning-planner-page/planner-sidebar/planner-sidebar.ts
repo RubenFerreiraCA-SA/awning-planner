@@ -11,6 +11,7 @@ import { MaterialSettingsPanelComponent } from '../../../components/material-set
 import { MeasurementChange, MeasurementPanelComponent } from '../../../components/measurement-panel/measurement-panel';
 import { ValidationPanelComponent } from '../../../components/validation-panel/validation-panel';
 import { ProjectSetupView } from './views/awning-type-selector/project-setup.view';
+import { HeaderSection } from './sections/header-section/header-section';
 
 const STEP_ORDER: WorkflowStep[] = ['select-type', 'draw', 'close', 'measure', 'calculate'];
 function stepToPanel(step: WorkflowStep): number {
@@ -24,6 +25,7 @@ function stepToPanel(step: WorkflowStep): number {
   selector: 'app-planner-sidebar',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    HeaderSection,
     ProjectSetupView,
     MeasurementPanelComponent,
     CornerPanelComponent,
