@@ -1,0 +1,19 @@
+  <!-- Header (always visible) -->
+  <div class="sidebar-header">
+    <div class="sidebar-logo" aria-hidden="true">
+      <span class="icon icon--logo"></span>
+    </div>
+    <h1 class="sidebar-title">Awning Planner</h1>
+    <div class="header-spacer"></div>
+    <button type="button" class="view-toggle" (click)="toggleViewMode.emit()"
+      [attr.aria-label]="wizardMode ? 'Switch to full scroll view' : 'Switch to step-by-step view'"
+      [title]="wizardMode ? 'Show all sections' : 'Step-by-step view'">
+      @if (wizardMode) {
+      <span class="icon icon--view-list" aria-hidden="true"></span>
+      <span>All</span>
+      } @else {
+      <span class="icon icon--view-steps" aria-hidden="true"></span>
+      <span>Steps</span>
+      }
+    </button>
+  </div>
