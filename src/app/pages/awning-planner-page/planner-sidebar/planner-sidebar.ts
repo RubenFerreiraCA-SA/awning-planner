@@ -179,12 +179,12 @@ export class PlannerSidebarComponent {
 
   // ─── Event handlers ────────────────────────────────────────────────────────
 
-  onProjectNameChange(event: Event): void {
-    this.state.setProjectName((event.target as HTMLInputElement).value);
+  onProjectNameChange(name: string): void {
+    this.state.setProjectName(name);
   }
 
-  onCustomerNameChange(event: Event): void {
-    this.state.setCustomerName((event.target as HTMLInputElement).value);
+  onCustomerNameChange(name: string): void {
+    this.state.setCustomerName(name);
   }
 
   onTypeChange(type: AwningType): void {

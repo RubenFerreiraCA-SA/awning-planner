@@ -59,19 +59,14 @@
         <h2 class="panel-title">Project Setup</h2>
       </div>
       <div class="panel-body">
-        <div class="field-group">
-          <label for="wz-customer-name" class="field-label">Customer Name</label>
-          <input id="wz-customer-name" type="text" class="field-input" placeholder="e.g. John Smith"
-            [value]="customerName()" (input)="onCustomerNameChange($event)" />
-        </div>
-        <div class="field-group">
-          <label for="wz-project-name" class="field-label">Project Name</label>
-          <input id="wz-project-name" type="text" class="field-input" placeholder="e.g. Smith Residence Patio"
-            [value]="projectName()" (input)="onProjectNameChange($event)" />
-        </div>
-        <div class="panel-divider"></div>
-        <p class="panel-section-label" id="wz-type-label">Awning Type</p>
-        <app-project-setup-view [selectedType]="awningType()" (typeChange)="onTypeChange($event)" />
+        <app-project-setup-view
+          [selectedType]="awningType()"
+          [customerName]="customerName()"
+          [projectName]="projectName()"
+          (typeChange)="onTypeChange($event)"
+          (customerNameChange)="onCustomerNameChange($event)"
+          (projectNameChange)="onProjectNameChange($event)"
+        />
       </div>
     }
 
@@ -325,20 +320,6 @@
        ═══════════════════════════════════════════════════════════════════ -->
   @else {
 
-  <section class="sidebar-section" aria-label="Project information">
-    <h2 class="section-title">Project Info</h2>
-    <div class="field-group">
-      <label for="project-name" class="field-label">Project Name</label>
-      <input id="project-name" type="text" class="field-input" placeholder="e.g. Smith Residence Patio"
-        [value]="projectName()" (input)="onProjectNameChange($event)" />
-    </div>
-    <div class="field-group">
-      <label for="customer-name" class="field-label">Customer Name</label>
-      <input id="customer-name" type="text" class="field-input" placeholder="e.g. John Smith" [value]="customerName()"
-        (input)="onCustomerNameChange($event)" />
-    </div>
-  </section>
-
   <section class="sidebar-section" aria-label="Workflow progress">
     <h2 class="section-title">Progress</h2>
     <ol class="steps" aria-label="Workflow steps">
@@ -359,9 +340,16 @@
     </ol>
   </section>
 
-  <section class="sidebar-section" aria-label="Awning type selection">
-    <h2 class="section-title">Awning Type</h2>
-    <app-project-setup-view [selectedType]="awningType()" (typeChange)="onTypeChange($event)" />
+  <section class="sidebar-section" aria-label="Project setup">
+    <h2 class="section-title">Project Setup</h2>
+    <app-project-setup-view
+      [selectedType]="awningType()"
+      [customerName]="customerName()"
+      [projectName]="projectName()"
+      (typeChange)="onTypeChange($event)"
+      (customerNameChange)="onCustomerNameChange($event)"
+      (projectNameChange)="onProjectNameChange($event)"
+    />
   </section>
 
   <section class="sidebar-section" aria-live="polite" aria-label="Current instructions">

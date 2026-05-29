@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, input, Output, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { AwningType } from '../../../../../models/awning.models';
 
 @Component({
@@ -8,6 +8,19 @@ import { AwningType } from '../../../../../models/awning.models';
   templateUrl: './project-setup.view.html',
 })
 export class ProjectSetupView {
-  @Input() selectedType: AwningType | null = null;
-  @Output() typeChange = new EventEmitter<AwningType>();
+  readonly selectedType = input<AwningType | null>(null);
+  readonly customerName = input('');
+  readonly projectName = input('');
+
+  readonly typeChange = output<AwningType>();
+  readonly customerNameChange = output<string>();
+  readonly projectNameChange = output<string>();
+
+  onCustomerNameInput(event: Event): void {
+    this.customerNameChange.emit((event.target as HTMLInputElement).value);
+  }
+
+  onProjectNameInput(event: Event): void {
+    this.projectNameChange.emit((event.target as HTMLInputElement).value);
+  }
 }
