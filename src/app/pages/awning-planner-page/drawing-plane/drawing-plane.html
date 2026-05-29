@@ -299,5 +299,23 @@
         </text>
       </g>
     }
+
   </svg>
+
+  @if (canUndo() || isClosed()) {
+    <div class="drawing-controls">
+      @if (canUndo()) {
+        <button type="button" class="btn btn--ghost btn--sm" (click)="onUndo()">
+          <span class="icon icon--undo" aria-hidden="true"></span>
+          Undo Last Point
+        </button>
+      }
+      @if (isClosed()) {
+        <button type="button" class="btn btn--ghost btn--sm" (click)="onUnlock()">
+          <span class="icon icon--unlock" aria-hidden="true"></span>
+          Unlock Frame to Edit
+        </button>
+      }
+    </div>
+  }
 </div>

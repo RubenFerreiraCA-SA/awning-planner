@@ -100,8 +100,6 @@ app-root {
 }
 
 // ── Icon mask utility ───────────────────────────────────────────────────────
-// Renders an SVG from public/icons/ using the current text colour.
-// The SVG file colour is irrelevant — mask uses alpha only.
 .icon {
   display: inline-block;
   background-color: currentColor;
@@ -110,6 +108,87 @@ app-root {
   mask-size: contain;
   flex-shrink: 0;
   vertical-align: middle;
+
+  &--undo          { width: 12px; height: 12px; mask-image: url('/icons/undo.svg'); }
+  &--unlock        { width: 12px; height: 12px; mask-image: url('/icons/unlock.svg'); }
+  &--check-sm      { width: 12px; height: 12px; mask-image: url('/icons/check-sm.svg'); }
+  &--refresh       { width: 14px; height: 14px; mask-image: url('/icons/refresh.svg'); }
+  &--chevron-left  { width: 14px; height: 14px; mask-image: url('/icons/chevron-left.svg'); }
+  &--chevron-right { width: 14px; height: 14px; mask-image: url('/icons/chevron-right.svg'); }
+  &--info-circle   { width: 13px; height: 13px; mask-image: url('/icons/info-circle.svg'); }
+}
+
+// ── Button utilities ─────────────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 36px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+  border: 1.5px solid transparent;
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+
+    &:not(:disabled):hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+  }
+
+  &--secondary {
+    background: #a2fffa;
+    color: #374151;
+    border-color: #a2fffa;
+
+    &:not(:disabled):hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+  }
+
+  &--ghost {
+    background: transparent;
+    color: #475569;
+    border-color: transparent;
+    gap: 5px;
+
+    &:hover {
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+    }
+  }
+
+  &--sm {
+    height: 28px;
+    font-size: 11px;
+    padding: 0 10px;
+    width: auto;
+  }
 }
 
 // Scrollbar styling

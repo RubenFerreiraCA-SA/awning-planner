@@ -1,4 +1,7 @@
-<aside class="sidebar" [class.sidebar--scroll]="!wizardMode()" aria-label="Awning Planner Controls">
+<aside 
+  class="sidebar" 
+  [class.sidebar--scroll]="!wizardMode()" 
+  aria-label="Awning Planner Controls">
   
   <app-header-section 
     [wizardMode]="wizardMode()" 
@@ -77,23 +80,6 @@
               }
             </div>
 
-            @if (points().length > 0) {
-              <div class="panel-divider"></div>
-              <div class="drawing-controls">
-                @if (!isClosed() && canUndo()) {
-                  <button type="button" class="btn btn--ghost btn--sm" (click)="onUndo()">
-                    <span class="icon icon--undo" aria-hidden="true"></span>
-                    Undo Last Point
-                  </button>
-                }
-                @if (isClosed()) {
-                  <button type="button" class="btn btn--ghost btn--sm" (click)="onUnlock()">
-                    <span class="icon icon--unlock" aria-hidden="true"></span>
-                    Unlock Frame to Edit
-                  </button>
-                }
-              </div>
-            }
           </div>
         }
 
@@ -141,6 +127,18 @@
                   (suggestionApplied)="onSuggestionApplied($event)"
                   (proceedAnyway)="onProceedAnyway()"
                 />
+              }
+
+              @if (canAdvance()) {
+                <div class="panel-divider"></div>
+                <button
+                  type="button"
+                  class="btn btn--confirm-layout"
+                  (click)="nextPanel()"
+                >
+                  Confirm Measurements &amp; Continue
+                  <span class="icon icon--chevron-right" aria-hidden="true"></span>
+                </button>
               }
             } @else {
               <div class="instructions">
@@ -246,6 +244,16 @@
                   />
                 </div>
               }
+              <div class="panel-divider"></div>
+
+              <button
+                type="button"
+                class="btn btn--confirm-layout"
+                (click)="onConfirmLayout()"
+              >
+                Confirm Layout &amp; Continue
+                <span class="icon icon--chevron-right" aria-hidden="true"></span>
+              </button>
             } @else {
               <div class="instructions">
                 <p>Complete the measurement step first.</p>
@@ -326,6 +334,7 @@
 
     <!-- Wizard footer navigation -->
     <div class="wizard-footer">
+      @if (![0, 1, 2].includes(panelIndex())) {
       <div class="wizard-footer__nav">
         <button
           type="button"
@@ -342,7 +351,9 @@
           >{{ panelIndex() + 1 }}&thinsp;/&thinsp;{{ panelDefs.length }}</span
         >
 
-        @if (panelIndex() < panelDefs.length - 1) {
+        @if (panelIndex() === 3) {
+          <div class="wizard-nav-btn--spacer"></div>
+        } @else if (panelIndex() < panelDefs.length - 1) {
           <button
             type="button"
             class="btn btn--primary wizard-nav-btn"
@@ -357,15 +368,12 @@
           <div class="wizard-nav-btn--spacer"></div>
         }
       </div>
+      }
+
 
       @if (!canAdvance() && panelIndex() < panelDefs.length - 1 && advanceHint()) {
         <p class="wizard-advance-hint" aria-live="polite">
-          <span
-            class="icon icon--info-circle"
-            aria-hidden="true"
-            style="flex-shrink: 0; margin-top: 1px"
-          ></span>
-          {{ advanceHint() }}
+          Instruction: {{ advanceHint() }}
         </p>
       }
     </div>
@@ -374,7 +382,7 @@
   <!-- ═══════════════════════════════════════════════════════════════════
        SCROLL MODE — all sections in one long view
        ═══════════════════════════════════════════════════════════════════ -->
-  @else {
+  @if (!wizardMode()) {
     <section class="sidebar-section" aria-label="Project setup">
       <h2 class="section-title">Project Setup</h2>
       <app-project-setup-view
@@ -587,4 +595,5 @@
       </div>
     </section>
   }
+
 </aside>

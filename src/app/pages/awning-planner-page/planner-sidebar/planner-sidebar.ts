@@ -93,7 +93,6 @@ export class PlannerSidebarComponent {
 
   private readonly _wizardMode = signal(true);
   private readonly _panelIndex = signal(0);
-
   readonly wizardMode = this._wizardMode.asReadonly();
   readonly panelIndex = this._panelIndex.asReadonly();
 
@@ -113,7 +112,7 @@ export class PlannerSidebarComponent {
       case 0: return this.state.awningType() !== null;
       case 1: return this.state.isClosed();
       case 2: return this.state.canCalculate();
-      case 3: return true; // Configure is always advanceable
+      case 3: return false; // advance only via Confirm Layout button
       case 4: return this.state.estimate() !== null;
       default: return false;
     }
@@ -141,11 +140,11 @@ export class PlannerSidebarComponent {
       if (!this._wizardMode()) return;
       const panelForStep = stepToPanel(this.state.currentStep());
       const current = this._panelIndex();
-      if (current < panelForStep) {
-        // Auto-advance to match workflow step
+      if (current < panelForStep && panelForStep <= 2) {
+        // Auto-advance through Setup/Draw/Measure only — Config+ requires explicit user action
         this._panelIndex.set(panelForStep);
       } else if (current > panelForStep && panelForStep < 3) {
-        // Sync backward only for early steps (draw/measure), not for configure+
+        // Sync backward for early steps when state regresses
         this._panelIndex.set(panelForStep);
       }
     });
@@ -179,6 +178,10 @@ export class PlannerSidebarComponent {
     if (this._panelIndex() > 0) {
       this._panelIndex.update(i => i - 1);
     }
+  }
+
+  onConfirmLayout(): void {
+    this._panelIndex.set(4);
   }
 
   // ─── Event handlers ────────────────────────────────────────────────────────

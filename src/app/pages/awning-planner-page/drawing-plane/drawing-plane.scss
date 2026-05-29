@@ -80,6 +80,17 @@
   &--open-side { background: #f3e8ff; color: #7c3aed; }
 }
 
+.drawing-controls {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
 .drawing-surface {
   display: block;
   width: 100%;
@@ -340,7 +351,6 @@ line.edge-hit-area {
   pointer-events: stroke;
 }
 
-// ── Icon modifiers (base class is in styles.scss) ──────────────────────────
 .icon {
   &--plane-select-type { width: 48px; height: 48px; mask-image: url('/icons/plane-select-type.svg'); }
   &--plane-draw-points { width: 48px; height: 48px; mask-image: url('/icons/plane-draw-points.svg'); }

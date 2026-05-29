@@ -82,6 +82,10 @@ export class DrawingPlaneComponent {
   readonly isClosed = this.state.isClosed;
   readonly currentStep = this.state.currentStep;
 
+  readonly canUndo = computed(
+    () => !this.state.isClosed() && this.state.points().length > 0,
+  );
+
   private readonly _cursor = signal<{ x: number; y: number } | null>(null);
   readonly cursor = this._cursor.asReadonly();
 
@@ -520,6 +524,14 @@ export class DrawingPlaneComponent {
 
   onMouseLeave(): void {
     this._cursor.set(null);
+  }
+
+  onUndo(): void {
+    this.state.undoLastPoint();
+  }
+
+  onUnlock(): void {
+    this.state.unlockDrawing();
   }
 
   toPolyPoints(points: DrawingPoint[]): string {
