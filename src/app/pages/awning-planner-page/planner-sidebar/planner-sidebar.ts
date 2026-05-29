@@ -10,7 +10,7 @@ import { EstimateSummaryComponent } from '../../../components/estimate-summary/e
 import { MaterialSettingsPanelComponent } from '../../../components/material-settings-panel/material-settings-panel';
 import { MeasurementChange, MeasurementPanelComponent } from '../../../components/measurement-panel/measurement-panel';
 import { ValidationPanelComponent } from '../../../components/validation-panel/validation-panel';
-import { AwningTypeSelectorView } from './views/awning-type-selector/awning-type-selector';
+import { ProjectSetupView } from './views/awning-type-selector/project-setup.view';
 
 const STEP_ORDER: WorkflowStep[] = ['select-type', 'draw', 'close', 'measure', 'calculate'];
 function stepToPanel(step: WorkflowStep): number {
@@ -24,7 +24,7 @@ function stepToPanel(step: WorkflowStep): number {
   selector: 'app-planner-sidebar',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    AwningTypeSelectorView,
+    ProjectSetupView,
     MeasurementPanelComponent,
     CornerPanelComponent,
     ValidationPanelComponent,

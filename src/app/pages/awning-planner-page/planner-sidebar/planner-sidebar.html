@@ -71,7 +71,7 @@
         </div>
         <div class="panel-divider"></div>
         <p class="panel-section-label" id="wz-type-label">Awning Type</p>
-        <app-awning-type-selector [selectedType]="awningType()" (typeChange)="onTypeChange($event)" />
+        <app-project-setup-view [selectedType]="awningType()" (typeChange)="onTypeChange($event)" />
       </div>
     }
 
@@ -361,7 +361,7 @@
 
   <section class="sidebar-section" aria-label="Awning type selection">
     <h2 class="section-title">Awning Type</h2>
-    <app-awning-type-selector [selectedType]="awningType()" (typeChange)="onTypeChange($event)" />
+    <app-project-setup-view [selectedType]="awningType()" (typeChange)="onTypeChange($event)" />
   </section>
 
   <section class="sidebar-section" aria-live="polite" aria-label="Current instructions">
