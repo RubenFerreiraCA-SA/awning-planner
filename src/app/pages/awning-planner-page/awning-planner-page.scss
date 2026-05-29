@@ -1,0 +1,26 @@
+:host {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.page-sidebar {
+  width: 480px;
+  min-width: 360px;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.page-canvas {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  app-drawing-plane {
+    flex: 1;
+    min-height: 0;
+  }
+}

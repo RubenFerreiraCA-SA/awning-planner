@@ -1,0 +1,82 @@
+.measurement-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edge-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &--missing .edge-input {
+    border-color: #f97316;
+
+    &:focus {
+      border-color: #ea580c;
+      outline-color: #f97316;
+    }
+  }
+}
+
+.edge-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.edge-name {
+  color: #1e293b;
+}
+
+.edge-required {
+  font-size: 10px;
+  font-weight: 500;
+  color: #f97316;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.edge-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.edge-input {
+  flex: 1;
+  height: 34px;
+  padding: 0 10px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #1e293b;
+  background: #ffffff;
+  transition: border-color 0.15s;
+
+  &:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+    border-color: #2563eb;
+  }
+
+  &::placeholder {
+    color: #cbd5e1;
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    opacity: 0.5;
+  }
+}
+
+.edge-unit {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  min-width: 20px;
+}

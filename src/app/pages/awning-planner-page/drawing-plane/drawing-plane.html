@@ -1,0 +1,303 @@
+<div class="plane-wrapper">
+  @if (!awningType()) {
+    <div class="plane-overlay" aria-live="polite">
+      <div class="plane-overlay__icon" aria-hidden="true">
+        <span class="icon icon--plane-select-type"></span>
+      </div>
+      <p class="plane-overlay__title">Select an awning type to begin</p>
+      <p class="plane-overlay__hint">Use the panel on the left to choose IBR or Louver.</p>
+    </div>
+  }
+
+  @if (awningType() && !isClosed() && shape().points.length === 0) {
+    <div class="plane-overlay plane-overlay--hint" aria-live="polite">
+      <div class="plane-overlay__icon" aria-hidden="true">
+        <span class="icon icon--plane-draw-points"></span>
+      </div>
+      <p class="plane-overlay__title">Click to add your first point</p>
+      <p class="plane-overlay__hint">Click at least 3 points, then click the first point to close the shape.</p>
+    </div>
+  }
+
+  @if (configureMode() && isClosed()) {
+    <div class="configure-hint" aria-live="polite">
+      Click any edge to cycle its role &mdash; <span class="role-chip role-chip--wall">Wall</span>
+      <span class="role-chip role-chip--gutter">Gutter</span>
+      <span class="role-chip role-chip--open-side">Open</span>
+    </div>
+  }
+
+  <svg
+    #svgEl
+    class="drawing-surface"
+    [class.drawing-surface--active]="!!awningType() && !isClosed()"
+    [class.drawing-surface--locked]="isClosed() && !configureMode()"
+    [class.drawing-surface--configure]="isClosed() && configureMode()"
+    [class.drawing-surface--idle]="!awningType()"
+    (click)="onSvgClick($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseleave)="onMouseLeave()"
+    aria-label="Awning drawing surface"
+    role="img"
+    [attr.aria-roledescription]="'Interactive drawing canvas'"
+  >
+    <defs>
+      <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+        <circle cx="12" cy="12" r="0.75" fill="#cbd5e1"/>
+      </pattern>
+      @if (isClosed() && displayPoints().length > 2) {
+        <clipPath id="polygon-clip">
+          <polygon [attr.points]="toPolyPoints(displayPoints())"/>
+        </clipPath>
+      }
+      <marker id="fall-arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0 0 L6 3 L0 6 Z" fill="#0369a1"/>
+      </marker>
+    </defs>
+
+    <!-- Grid background -->
+    <rect width="100%" height="100%" fill="url(#dot-grid)"/>
+
+    <!-- Original polygon outline (faded reference when scaled view is active) -->
+    @if (isClosed() && shape().points.length > 2 && scaledData()) {
+      <polygon
+        class="polygon-fill polygon-fill--original"
+        [attr.points]="toPolyPoints(shape().points)"
+      />
+    }
+
+    <!-- Closed polygon fill (scaled when available, original when not) -->
+    @if (isClosed() && displayPoints().length > 2) {
+      <polygon
+        class="polygon-fill"
+        [attr.points]="toPolyPoints(displayPoints())"
+      />
+    }
+
+    <!-- ── Technical overlays (purlin lines, clipped to polygon) ─────────── -->
+    @if (purlinLines().length > 0) {
+      <g class="purlin-group" clip-path="url(#polygon-clip)" aria-hidden="true">
+        @for (line of purlinLines(); track $index) {
+          <line
+            class="purlin-line"
+            [attr.x1]="line.x1" [attr.y1]="line.y1"
+            [attr.x2]="line.x2" [attr.y2]="line.y2"
+          />
+        }
+      </g>
+    }
+
+    <!-- Gutter indicators (offset line outside each gutter edge) -->
+    @for (gl of gutterLines(); track $index) {
+      <line
+        class="gutter-indicator"
+        [attr.x1]="gl.x1" [attr.y1]="gl.y1"
+        [attr.x2]="gl.x2" [attr.y2]="gl.y2"
+        aria-hidden="true"
+      />
+    }
+
+    <!-- Wall hatching -->
+    @if (wallHatches().length > 0) {
+      <g class="wall-hatch-group" aria-hidden="true">
+        @for (h of wallHatches(); track $index) {
+          <line class="wall-hatch" [attr.x1]="h.x1" [attr.y1]="h.y1" [attr.x2]="h.x2" [attr.y2]="h.y2"/>
+        }
+      </g>
+    }
+
+    <!-- Post markers (squares along gutter edge) -->
+    @if (postMarkers().length > 0) {
+      <g class="post-markers" aria-hidden="true">
+        @for (pm of postMarkers(); track $index) {
+          <rect
+            class="post-marker"
+            [attr.x]="pm.x - 5" [attr.y]="pm.y - 5"
+            width="10" height="10"
+          />
+        }
+      </g>
+    }
+
+    <!-- Fall direction arrow -->
+    @if (fallArrow()) {
+      @let fa = fallArrow()!;
+      <g class="fall-arrow-group" aria-hidden="true">
+        <line
+          class="fall-arrow__line"
+          [attr.x1]="fa.x1" [attr.y1]="fa.y1"
+          [attr.x2]="fa.x2" [attr.y2]="fa.y2"
+          marker-end="url(#fall-arrowhead)"
+        />
+        <text
+          class="fall-arrow__label"
+          [attr.x]="(fa.x1 + fa.x2) / 2 + 6"
+          [attr.y]="(fa.y1 + fa.y2) / 2 - 5"
+          text-anchor="start"
+        >{{ fa.label }}</text>
+      </g>
+    }
+
+    <!-- ── Edges ────────────────────────────────────────────────────────── -->
+    @for (edge of shape().edges; track edge.id) {
+      @let from = displayPointMap().get(edge.fromPointId);
+      @let to = displayPointMap().get(edge.toPointId);
+      @let role = awningConfig().edgeRoles[edge.id];
+      @if (from && to) {
+        <line
+          [attr.x1]="from.x"
+          [attr.y1]="from.y"
+          [attr.x2]="to.x"
+          [attr.y2]="to.y"
+          [class.edge--locked]="isClosed() && !!edge.realLengthMm && !role"
+          [class.edge--estimated]="isClosed() && !edge.realLengthMm && !!scaledData() && !role"
+          [class.edge--drawing]="!isClosed()"
+          [class.edge--role]="!!role"
+          [style.stroke]="roleStroke(role)"
+        />
+      }
+    }
+
+    <!-- Rubber-band line from last point to cursor -->
+    @if (!isClosed() && shape().points.length > 0 && cursor()) {
+      @let last = shape().points[shape().points.length - 1];
+      <line
+        class="rubber-band"
+        [attr.x1]="last.x"
+        [attr.y1]="last.y"
+        [attr.x2]="cursor()!.x"
+        [attr.y2]="cursor()!.y"
+      />
+    }
+
+    <!-- Configure-mode edge hit areas (transparent, wide for easy clicking) -->
+    @if (configureMode() && isClosed()) {
+      @for (edge of shape().edges; track edge.id) {
+        @let from = displayPointMap().get(edge.fromPointId);
+        @let to = displayPointMap().get(edge.toPointId);
+        @if (from && to) {
+          <line
+            class="edge-hit-area"
+            [attr.x1]="from.x" [attr.y1]="from.y"
+            [attr.x2]="to.x" [attr.y2]="to.y"
+            (click)="onEdgeClick($event, edge.id)"
+            [attr.aria-label]="'Edge ' + edge.label + ', role: ' + getEdgeRole(edge.id) + '. Click to change.'"
+          />
+        }
+      }
+    }
+
+    <!-- Edge labels (shown when locked) -->
+    @for (label of edgeLabels(); track label.text) {
+      <g>
+        <rect
+          [attr.x]="label.x - 32"
+          [attr.y]="label.y - 10"
+          width="64"
+          height="16"
+          rx="3"
+          [class.label-bg]="true"
+          [class.label-bg--measured]="label.hasMeasurement"
+          [class.label-bg--pending]="!label.hasMeasurement"
+        />
+        <text
+          [attr.x]="label.x"
+          [attr.y]="label.y + 2"
+          class="edge-label"
+          [class.edge-label--measured]="label.hasMeasurement"
+          [class.edge-label--pending]="!label.hasMeasurement"
+          text-anchor="middle"
+        >{{ label.text }}</text>
+      </g>
+    }
+
+    <!-- Corner angle indicators (shown when locked) -->
+    @for (ind of angleIndicators(); track ind.pointId) {
+      <g class="angle-indicator">
+        <path
+          [attr.d]="ind.path"
+          [class.angle-path--right]="ind.isRight"
+          [class.angle-path--custom]="!ind.isRight"
+          [class.angle-path--confirmed]="ind.confirmed"
+          [class.angle-path--pending]="!ind.confirmed"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        @if (ind.label) {
+          <text
+            [attr.x]="ind.lx"
+            [attr.y]="ind.ly + 3"
+            class="angle-label"
+            [class.angle-label--confirmed]="ind.confirmed"
+            [class.angle-label--pending]="!ind.confirmed"
+            text-anchor="middle"
+          >{{ ind.label }}</text>
+        }
+      </g>
+    }
+
+    <!-- Point markers -->
+    @for (point of displayPoints(); track point.id; let i = $index) {
+      <g class="point-group">
+        <!-- Close target ring (shown on first point when closeable) -->
+        @if (i === 0 && shape().points.length >= 3 && !isClosed()) {
+          <circle
+            [attr.cx]="point.x"
+            [attr.cy]="point.y"
+            r="18"
+            class="close-ring"
+            [class.close-ring--near]="isNearFirstPoint()"
+          />
+        }
+        <circle
+          [attr.cx]="point.x"
+          [attr.cy]="point.y"
+          [attr.r]="getPointRadius(i)"
+          [class.point--first]="i === 0"
+          [class.point--closeable]="i === 0 && shape().points.length >= 3 && !isClosed()"
+          [class.point--regular]="i !== 0 && !isClosed()"
+          [class.point--locked]="isClosed()"
+        />
+        <text
+          [attr.x]="point.x"
+          [attr.y]="point.y - getPointRadius(i) - 5"
+          class="point-label"
+          text-anchor="middle"
+        >{{ getPointLabel(i) }}</text>
+      </g>
+    }
+
+    <!-- Scale bar (shown when scaled view is active) -->
+    @if (scaleBar()) {
+      @let bar = scaleBar()!;
+      <g class="scale-bar" aria-label="Scale indicator">
+        <line
+          [attr.x1]="bar.x1"
+          [attr.y1]="bar.y"
+          [attr.x2]="bar.x1 + bar.barPx"
+          [attr.y2]="bar.y"
+          class="scale-bar__line"
+        />
+        <line [attr.x1]="bar.x1" [attr.y1]="bar.y - 4" [attr.x2]="bar.x1" [attr.y2]="bar.y + 4" class="scale-bar__tick"/>
+        <line [attr.x1]="bar.x1 + bar.barPx" [attr.y1]="bar.y - 4" [attr.x2]="bar.x1 + bar.barPx" [attr.y2]="bar.y + 4" class="scale-bar__tick"/>
+        <text [attr.x]="bar.x1 + bar.barPx / 2" [attr.y]="bar.y - 8" class="scale-bar__label" text-anchor="middle">{{ bar.label }}</text>
+      </g>
+    }
+
+    <!-- Status badge -->
+    @if (isClosed()) {
+      <g class="status-badge">
+        <rect x="12" y="12" width="110" height="24" rx="12" fill="#16a34a"/>
+        <text x="67" y="28" text-anchor="middle" class="status-text">Frame Locked</text>
+      </g>
+    } @else if (awningType() && shape().points.length > 0) {
+      <g class="status-badge">
+        <rect x="12" y="12" width="130" height="24" rx="12" fill="#2563eb"/>
+        <text x="77" y="28" text-anchor="middle" class="status-text">
+          {{ shape().points.length }} point{{ shape().points.length === 1 ? '' : 's' }} placed
+        </text>
+      </g>
+    }
+  </svg>
+</div>

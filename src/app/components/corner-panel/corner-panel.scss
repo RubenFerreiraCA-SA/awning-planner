@@ -1,0 +1,157 @@
+.corner-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.corner-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  min-height: 40px;
+  flex-wrap: wrap;
+
+  &--confirmed {
+    border-color: #86efac;
+    background: #f0fdf4;
+  }
+
+  &--pending {
+    border-color: #fcd34d;
+    background: #fffbeb;
+  }
+}
+
+.corner-label {
+  width: 18px;
+  height: 18px;
+  background: #1e293b;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.angle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+
+  &--right {
+    color: #15803d;
+    background: #dcfce7;
+  }
+}
+
+.angle-input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.detected-hint {
+  font-size: 10px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.angle-input {
+  width: 68px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: inherit;
+  color: #1e293b;
+  background: #ffffff;
+
+  &:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+    border-color: #2563eb;
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    opacity: 0.4;
+  }
+}
+
+.unit {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.btn-confirm {
+  height: 26px;
+  padding: 0 10px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #1d4ed8;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+}
+
+.btn-override {
+  margin-left: auto;
+  height: 22px;
+  padding: 0 8px;
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #374151;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+}
+
+.confirmed-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #15803d;
+}

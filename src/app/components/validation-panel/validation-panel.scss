@@ -1,0 +1,142 @@
+.validation-result {
+  border-radius: 7px;
+  padding: 10px 12px;
+  border: 1.5px solid;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &.result--valid {
+    border-color: #86efac;
+    background: #f0fdf4;
+    color: #15803d;
+  }
+
+  &.result--warning {
+    border-color: #fcd34d;
+    background: #fffbeb;
+    color: #92400e;
+  }
+
+  &.result--error {
+    border-color: #fca5a5;
+    background: #fef2f2;
+    color: #991b1b;
+  }
+}
+
+.result-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.result-icon {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.result-message {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.result-detail {
+  font-size: 11px;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.suggestions-heading {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+  opacity: 0.75;
+}
+
+.suggestion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 5px;
+  padding: 7px 8px;
+}
+
+.suggestion-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.suggestion-label {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.suggestion-desc {
+  font-size: 10px;
+  opacity: 0.75;
+}
+
+.btn-apply {
+  height: 26px;
+  padding: 0 10px;
+  border: 1.5px solid currentColor;
+  border-radius: 5px;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  white-space: nowrap;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+.btn-proceed {
+  align-self: flex-start;
+  height: 26px;
+  padding: 0 10px;
+  background: transparent;
+  border: 1px dashed currentColor;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}

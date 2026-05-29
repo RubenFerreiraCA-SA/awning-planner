@@ -1,0 +1,356 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.plane-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.plane-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 1;
+  pointer-events: none;
+
+  &--hint {
+    justify-content: flex-end;
+    padding-bottom: 40px;
+  }
+
+  &__icon {
+    color: #94a3b8;
+    margin-bottom: 4px;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #64748b;
+    margin: 0;
+  }
+
+  &__hint {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 0;
+    max-width: 320px;
+    text-align: center;
+  }
+}
+
+.configure-hint {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  pointer-events: none;
+  font-size: 11px;
+  font-weight: 500;
+  color: #475569;
+  background: #ffffffee;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.role-chip {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+
+  &--wall    { background: #fef3c7; color: #d97706; }
+  &--gutter  { background: #e0f2fe; color: #0891b2; }
+  &--open-side { background: #f3e8ff; color: #7c3aed; }
+}
+
+.drawing-surface {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: default;
+  user-select: none;
+
+  &--active {
+    cursor: crosshair;
+  }
+
+  &--locked {
+    cursor: default;
+  }
+
+  &--configure {
+    cursor: default;
+  }
+}
+
+// Polygon fill
+.polygon-fill {
+  fill: #dcfce7;
+  fill-opacity: 0.5;
+  stroke: none;
+
+  &--original {
+    fill: #e2e8f0;
+    fill-opacity: 0.25;
+    stroke: #cbd5e1;
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+  }
+}
+
+// Edges
+line.edge--drawing {
+  stroke: #2563eb;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+line.edge--locked {
+  stroke: #16a34a;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+line.edge--estimated {
+  stroke: #94a3b8;
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  stroke-linecap: round;
+}
+
+line.rubber-band {
+  stroke: #94a3b8;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+// Close ring
+.close-ring {
+  fill: none;
+  stroke: #f97316;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+
+  &--near {
+    opacity: 1;
+    stroke-width: 2;
+  }
+}
+
+// Points
+circle.point--first {
+  fill: #2563eb;
+  stroke: #ffffff;
+  stroke-width: 2.5;
+}
+
+circle.point--closeable {
+  fill: #f97316;
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.6));
+}
+
+circle.point--regular {
+  fill: #2563eb;
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+circle.point--locked {
+  fill: #16a34a;
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.point-label {
+  font-size: 11px;
+  font-weight: 700;
+  fill: #1e293b;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  pointer-events: none;
+}
+
+// Edge labels
+.label-bg {
+  &--measured {
+    fill: #f0fdf4;
+    stroke: #86efac;
+    stroke-width: 1;
+  }
+
+  &--pending {
+    fill: #fff7ed;
+    stroke: #fdba74;
+    stroke-width: 1;
+  }
+}
+
+.edge-label {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  pointer-events: none;
+
+  &--measured {
+    fill: #15803d;
+  }
+
+  &--pending {
+    fill: #c2410c;
+  }
+}
+
+// Corner angle indicators
+.angle-path--right {
+  stroke: #16a34a;
+  stroke-width: 1.5;
+  opacity: 0.8;
+}
+
+.angle-path--custom {
+  stroke-width: 1.5;
+
+  &.angle-path--confirmed {
+    stroke: #16a34a;
+    opacity: 0.8;
+  }
+
+  &.angle-path--pending {
+    stroke: #f97316;
+    stroke-dasharray: 3 2;
+    opacity: 0.9;
+  }
+}
+
+.angle-label {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  pointer-events: none;
+
+  &--confirmed {
+    fill: #16a34a;
+  }
+
+  &--pending {
+    fill: #c2410c;
+  }
+}
+
+// Scale bar
+.scale-bar {
+  pointer-events: none;
+
+  &__line {
+    stroke: #475569;
+    stroke-width: 2;
+    stroke-linecap: butt;
+  }
+
+  &__tick {
+    stroke: #475569;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  &__label {
+    font-size: 10px;
+    font-weight: 600;
+    fill: #475569;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+}
+
+// ── Technical drawing overlays ─────────────────────────────────────────────
+
+.purlin-line {
+  stroke: #3b82f6;
+  stroke-width: 1;
+  stroke-dasharray: 5 4;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+
+.gutter-indicator {
+  stroke: #0891b2;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+
+.wall-hatch {
+  stroke: #d97706;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.post-marker {
+  fill: none;
+  stroke: #0891b2;
+  stroke-width: 1.5;
+  rx: 1;
+}
+
+.fall-arrow__line {
+  stroke: #0369a1;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.fall-arrow__label {
+  font-size: 9px;
+  font-weight: 700;
+  fill: #0369a1;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  pointer-events: none;
+}
+
+line.edge--role {
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+line.edge-hit-area {
+  stroke: transparent;
+  stroke-width: 18;
+  cursor: pointer;
+  pointer-events: stroke;
+}
+
+// ── Icon modifiers (base class is in styles.scss) ──────────────────────────
+.icon {
+  &--plane-select-type { width: 48px; height: 48px; mask-image: url('/icons/plane-select-type.svg'); }
+  &--plane-draw-points { width: 48px; height: 48px; mask-image: url('/icons/plane-draw-points.svg'); }
+}
+
+// Status badge
+.status-text {
+  font-size: 11px;
+  font-weight: 600;
+  fill: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  pointer-events: none;
+}

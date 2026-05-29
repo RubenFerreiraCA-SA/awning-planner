@@ -1,0 +1,26 @@
+<div class="type-selector" role="group" aria-label="Select awning type">
+    <button type="button" class="type-card" [class.type-card--selected]="selectedType() === 'IBR'"
+        (click)="typeChange.emit('IBR')" [attr.aria-pressed]="selectedType() === 'IBR'">
+        <span class="type-icon" aria-hidden="true">
+            <span class="icon icon--type-ibr"></span>
+        </span>
+        <span class="type-name">IBR Awning</span>
+        <span class="type-desc">Corrugated iron roof sheets</span>
+    </button>
+
+    <button type="button" class="type-card" [class.type-card--selected]="selectedType() === 'LOUVER'"
+        (click)="typeChange.emit('LOUVER')" [attr.aria-pressed]="selectedType() === 'LOUVER'">
+        <span class="type-icon" aria-hidden="true">
+            <svg width="36" height="24" viewBox="0 0 36 24" fill="none">
+                <rect x="2" y="2" width="32" height="4" rx="1" fill="currentColor" opacity="0.8"
+                    transform="skewX(-10)" />
+                <rect x="2" y="9" width="32" height="4" rx="1" fill="currentColor" opacity="0.8"
+                    transform="skewX(-10)" />
+                <rect x="2" y="16" width="32" height="4" rx="1" fill="currentColor" opacity="0.8"
+                    transform="skewX(-10)" />
+            </svg>
+        </span>
+        <span class="type-name">Louver Awning</span>
+        <span class="type-desc">Adjustable blade system</span>
+    </button>
+</div>

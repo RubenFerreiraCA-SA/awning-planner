@@ -1,0 +1,496 @@
+<aside class="sidebar" [class.sidebar--scroll]="!wizardMode()" aria-label="Awning Planner Controls">
+
+  <!-- Header (always visible) -->
+  <div class="sidebar-header">
+    <div class="sidebar-logo" aria-hidden="true">
+      <span class="icon icon--logo"></span>
+    </div>
+    <h1 class="sidebar-title">Awning Planner</h1>
+    <div class="header-spacer"></div>
+    <button type="button" class="view-toggle" (click)="toggleViewMode()"
+      [attr.aria-label]="wizardMode() ? 'Switch to full scroll view' : 'Switch to step-by-step view'"
+      [title]="wizardMode() ? 'Show all sections' : 'Step-by-step view'">
+      @if (wizardMode()) {
+        <span class="icon icon--view-list" aria-hidden="true"></span>
+        <span>All</span>
+      } @else {
+        <span class="icon icon--view-steps" aria-hidden="true"></span>
+        <span>Steps</span>
+      }
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       WIZARD MODE
+       ═══════════════════════════════════════════════════════════════════ -->
+  @if (wizardMode()) {
+
+  <!-- Step progress strip -->
+  <nav class="wizard-progress" aria-label="Wizard steps">
+    @for (panel of panelDefs; track panel.label; let i = $index) {
+      <button type="button" class="wp-step" [class.wp-step--active]="panelIndex() === i"
+        [class.wp-step--done]="panelIndex() > i" (click)="panelIndex() > i ? setPanel(i) : null"
+        [attr.aria-current]="panelIndex() === i ? 'step' : null"
+        [attr.aria-label]="panel.label + (panelIndex() > i ? ' (complete)' : panelIndex() === i ? ' (current)' : '')"
+        [attr.title]="panel.hint" [style.cursor]="panelIndex() > i ? 'pointer' : 'default'">
+        <span class="wp-step__bubble" aria-hidden="true">
+          @if (panelIndex() > i) {
+            <img src="/icons/check-bubble.svg" width="10" height="10" alt="">
+          } @else {
+            {{ i + 1 }}
+          }
+        </span>
+        <span class="wp-step__label">{{ panel.label }}</span>
+      </button>
+      @if (i < panelDefs.length - 1) {
+        <div class="wp-connector" [class.wp-connector--done]="panelIndex() > i" aria-hidden="true"></div>
+      }
+    }
+  </nav>
+
+  <!-- Scrollable panel content -->
+  <div class="wizard-panel" role="region" [attr.aria-label]="panelDefs[panelIndex()].label + ' panel'">
+
+    @switch (panelIndex()) {
+
+    <!-- ── Panel 0: Setup ─────────────────────────────────────────── -->
+    @case (0) {
+      <div class="panel-header">
+        <h2 class="panel-title">Project Setup</h2>
+      </div>
+      <div class="panel-body">
+        <div class="field-group">
+          <label for="wz-customer-name" class="field-label">Customer Name</label>
+          <input id="wz-customer-name" type="text" class="field-input" placeholder="e.g. John Smith"
+            [value]="customerName()" (input)="onCustomerNameChange($event)" />
+        </div>
+        <div class="field-group">
+          <label for="wz-project-name" class="field-label">Project Name</label>
+          <input id="wz-project-name" type="text" class="field-input" placeholder="e.g. Smith Residence Patio"
+            [value]="projectName()" (input)="onProjectNameChange($event)" />
+        </div>
+        <div class="panel-divider"></div>
+        <p class="panel-section-label" id="wz-type-label">Awning Type</p>
+        <app-awning-type-selector [selectedType]="awningType()" (typeChange)="onTypeChange($event)" />
+      </div>
+    }
+
+    <!-- ── Panel 1: Draw ──────────────────────────────────────────── -->
+    @case (1) {
+      <div class="panel-header">
+        <h2 class="panel-title">Draw Your Outline</h2>
+      </div>
+      <div class="panel-body">
+        <div class="instructions">
+          @if (isClosed()) {
+            <p class="instructions--success">
+              <img src="/icons/check-circle.svg" width="14" height="14" alt="" aria-hidden="true"
+                style="vertical-align:-2px;margin-right:4px">
+              Frame locked · {{ points().length }} corners
+            </p>
+          } @else {
+            @switch (currentStep()) {
+              @case ('draw') {
+                <p>Click the canvas to place corner points. You need at least 3.</p>
+              }
+              @case ('close') {
+                <p>Click the <strong>first point</strong> (orange) to close the frame, or keep adding corners.</p>
+              }
+              @default {
+                <p>Select an awning type first, then click the canvas to begin.</p>
+              }
+            }
+          }
+        </div>
+
+        @if (points().length > 0) {
+          <div class="panel-divider"></div>
+          <div class="drawing-controls">
+            @if (!isClosed() && canUndo()) {
+              <button type="button" class="btn btn--ghost btn--sm" (click)="onUndo()">
+                <span class="icon icon--undo" aria-hidden="true"></span>
+                Undo Last Point
+              </button>
+            }
+            @if (isClosed()) {
+              <button type="button" class="btn btn--ghost btn--sm" (click)="onUnlock()">
+                <span class="icon icon--unlock" aria-hidden="true"></span>
+                Unlock Frame to Edit
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Panel 2: Measure ───────────────────────────────────────── -->
+    @case (2) {
+      <div class="panel-header">
+        <h2 class="panel-title">Measurements &amp; Angles</h2>
+        <p class="panel-subtitle">Enter real-world lengths and confirm corner angles.</p>
+      </div>
+      <div class="panel-body">
+        @if (isClosed()) {
+          <div class="drawing-controls" style="margin-bottom:14px">
+            <button type="button" class="btn btn--ghost btn--sm" (click)="onUnlock()">
+              <span class="icon icon--unlock" aria-hidden="true"></span>
+              Unlock Frame to Edit
+            </button>
+          </div>
+
+          <p class="panel-section-label">Edge Lengths</p>
+          <app-measurement-panel [edges]="edges()" (measurementChange)="onMeasurementChange($event)" />
+
+          <div class="panel-divider"></div>
+
+          <p class="panel-section-label">
+            Corner Angles
+            @if (!hasNonRightAngles()) {
+              <span class="title-hint">all right angles</span>
+            }
+          </p>
+          <app-corner-panel [corners]="corners()" (angleChanged)="onAngleChanged($event)"
+            (angleConfirmed)="onAngleConfirmed($event)" (cornerOverridden)="onCornerOverridden($event)" />
+
+          @if (validationResult()) {
+            <div class="panel-divider"></div>
+            <p class="panel-section-label">Validation</p>
+            <app-validation-panel [result]="validationResult()" (suggestionApplied)="onSuggestionApplied($event)"
+              (proceedAnyway)="onProceedAnyway()" />
+          }
+        } @else {
+          <div class="instructions">
+            <p>Draw and close the frame first — go back to the <strong>Draw</strong> step.</p>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Panel 3: Configure ─────────────────────────────────────── -->
+    @case (3) {
+      <div class="panel-header">
+        <h2 class="panel-title">Configure Layout</h2>
+        <p class="panel-subtitle">Assign edge roles — or click edges directly on the drawing.</p>
+      </div>
+      <div class="panel-body">
+        @if (edges().length > 0) {
+          <p class="panel-section-label">Edge Roles</p>
+          <p class="config-hint">Click an edge on the canvas to cycle its role, or use the buttons below. The
+            <strong>gutter</strong> edge is the front (where water drains).</p>
+
+          <div class="edge-role-list" role="list">
+            @for (edge of edges(); track edge.id) {
+              <div class="edge-role-item" role="listitem">
+                <div class="edge-role-meta">
+                  <span class="edge-role-label">{{ edge.label }}</span>
+                  @if (edge.realLengthMm) {
+                    <span class="edge-role-length">{{ (edge.realLengthMm / 1000).toFixed(2) }}m</span>
+                  }
+                </div>
+                <div class="edge-role-buttons" role="group" [attr.aria-label]="'Role for edge ' + edge.label">
+                  @for (opt of edgeRoleOptions; track opt.value) {
+                    <button type="button"
+                      [class]="'role-btn role-btn--' + opt.value + (getEdgeRole(edge.id) === opt.value ? ' role-btn--active' : '')"
+                      (click)="onSetEdgeRole(edge.id, opt.value)" [attr.aria-pressed]="getEdgeRole(edge.id) === opt.value"
+                      [style.--role-color]="opt.color">{{ opt.label }}</button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="panel-divider"></div>
+          <p class="panel-section-label">Fall Direction</p>
+          <div class="field-group">
+            <label for="wz-fall-direction" class="field-label">
+              Water drains toward <span class="field-hint">(blank = auto from gutter)</span>
+            </label>
+            <select id="wz-fall-direction" class="field-input" (change)="onFallDirectionChange($event)">
+              <option value="" [selected]="!awningConfig().fallToEdgeId">Auto (from gutter role)</option>
+              @for (edge of edges(); track edge.id) {
+                <option [value]="edge.id" [selected]="awningConfig().fallToEdgeId === edge.id">
+                  {{ edge.label }}{{ edge.realLengthMm ? ' · ' + (edge.realLengthMm / 1000).toFixed(2) + 'm' : '' }}
+                </option>
+              }
+            </select>
+          </div>
+
+          @if (awningType() === 'IBR') {
+            <div class="panel-divider"></div>
+            <p class="panel-section-label">Purlins</p>
+            <div class="field-group">
+              <label for="wz-purlin-override" class="field-label">Count override <span class="field-hint">(blank = auto)</span></label>
+              <input id="wz-purlin-override" type="number" class="field-input" min="1" max="30"
+                [value]="awningConfig().purlinCountOverride ?? ''" (input)="onPurlinOverrideInput($event)"
+                placeholder="Auto" />
+            </div>
+          }
+        } @else {
+          <div class="instructions">
+            <p>Complete the measurement step first.</p>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Panel 4: Calculate ─────────────────────────────────────── -->
+    @case (4) {
+      <div class="panel-header">
+        <h2 class="panel-title">Material Settings</h2>
+        <p class="panel-subtitle">Configure pricing and run the estimate.</p>
+      </div>
+      <div class="panel-body">
+        <app-material-settings-panel [awningType]="awningType()" [ibrSettings]="ibrSettings()"
+          [louverSettings]="louverSettings()" (ibrSettingsChange)="onIbrSettingsChange($event)"
+          (louverSettingsChange)="onLouverSettingsChange($event)" />
+
+        <div class="panel-divider"></div>
+
+        <button type="button" class="btn btn--primary" [disabled]="!canCalculate()" (click)="onCalculate()">
+          Calculate Materials
+        </button>
+
+        @if (!canCalculate()) {
+          <p class="validation-hint" aria-live="polite">{{ validationMessage() }}</p>
+        }
+      </div>
+    }
+
+    <!-- ── Panel 5: Results ───────────────────────────────────────── -->
+    @case (5) {
+      <div class="panel-header">
+        <h2 class="panel-title">Estimate Results</h2>
+        <p class="panel-subtitle">Review the material breakdown and cost.</p>
+      </div>
+      <div class="panel-body">
+        @if (estimate()) {
+          <app-estimate-summary [estimate]="estimate()!" />
+
+          <div class="panel-divider"></div>
+
+          <button type="button" class="btn btn--outline" disabled title="Export coming in a future version"
+            aria-disabled="true">Export Estimate</button>
+
+          <div class="new-drawing-action">
+            <button type="button" class="btn btn--new-drawing" (click)="onReset()">
+              <span class="icon icon--refresh" aria-hidden="true"></span>
+              Start New Drawing
+            </button>
+          </div>
+        } @else {
+          <div class="instructions">
+            <p>Go back to <strong>Calculate</strong> and run the estimate first.</p>
+          </div>
+        }
+      </div>
+    }
+
+    }
+  </div>
+
+  <!-- Wizard footer navigation -->
+  <div class="wizard-footer">
+    <div class="wizard-footer__nav">
+      <button type="button" class="btn btn--secondary wizard-nav-btn" [disabled]="panelIndex() === 0"
+        (click)="prevPanel()" aria-label="Previous step">
+        <span class="icon icon--chevron-left" aria-hidden="true"></span>
+        Back
+      </button>
+
+      <span class="wizard-footer__counter">{{ panelIndex() + 1 }}&thinsp;/&thinsp;{{ panelDefs.length }}</span>
+
+      @if (panelIndex() < panelDefs.length - 1) {
+        <button type="button" class="btn btn--primary wizard-nav-btn"
+          [disabled]="!canAdvance()" (click)="nextPanel()" aria-label="Next step">
+          Next
+          <span class="icon icon--chevron-right" aria-hidden="true"></span>
+        </button>
+      } @else {
+        <div class="wizard-nav-btn--spacer"></div>
+      }
+    </div>
+
+    @if (!canAdvance() && panelIndex() < panelDefs.length - 1 && advanceHint()) {
+      <p class="wizard-advance-hint" aria-live="polite">
+        <span class="icon icon--info-circle" aria-hidden="true" style="flex-shrink:0;margin-top:1px"></span>
+        {{ advanceHint() }}
+      </p>
+    }
+  </div>
+
+  }
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       SCROLL MODE — all sections in one long view
+       ═══════════════════════════════════════════════════════════════════ -->
+  @else {
+
+  <section class="sidebar-section" aria-label="Project information">
+    <h2 class="section-title">Project Info</h2>
+    <div class="field-group">
+      <label for="project-name" class="field-label">Project Name</label>
+      <input id="project-name" type="text" class="field-input" placeholder="e.g. Smith Residence Patio"
+        [value]="projectName()" (input)="onProjectNameChange($event)" />
+    </div>
+    <div class="field-group">
+      <label for="customer-name" class="field-label">Customer Name</label>
+      <input id="customer-name" type="text" class="field-input" placeholder="e.g. John Smith" [value]="customerName()"
+        (input)="onCustomerNameChange($event)" />
+    </div>
+  </section>
+
+  <section class="sidebar-section" aria-label="Workflow progress">
+    <h2 class="section-title">Progress</h2>
+    <ol class="steps" aria-label="Workflow steps">
+      @for (step of steps; track step.key; let i = $index) {
+        @let status = stepStatus(step.key);
+        <li class="step" [class.step--active]="status === 'active'" [class.step--complete]="status === 'complete'"
+          [class.step--pending]="status === 'pending'" [attr.aria-current]="status === 'active' ? 'step' : null">
+          <span class="step-indicator" aria-hidden="true">
+            @if (status === 'complete') {
+              <span class="icon icon--check-sm"></span>
+            } @else {
+              {{ i + 1 }}
+            }
+          </span>
+          <span class="step-label">{{ step.label }}</span>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="sidebar-section" aria-label="Awning type selection">
+    <h2 class="section-title">Awning Type</h2>
+    <app-awning-type-selector [selectedType]="awningType()" (typeChange)="onTypeChange($event)" />
+  </section>
+
+  <section class="sidebar-section" aria-live="polite" aria-label="Current instructions">
+    <h2 class="section-title">Instructions</h2>
+    <div class="instructions">
+      @switch (currentStep()) {
+        @case ('select-type') { <p>Select an awning type above to begin.</p> }
+        @case ('draw') { <p>Click the drawing canvas to place corner points. Use <strong>Undo</strong> to remove the last point.</p> }
+        @case ('close') { <p>Continue placing points. Click the <strong>first point</strong> (highlighted in orange) to close the frame, or <strong>Undo</strong> to step back.</p> }
+        @case ('measure') { <p>Frame locked. Enter the real-world length for each edge, then confirm any non-right-angle corners.</p> }
+        @default { <p>Ready to calculate. Click <strong>Calculate Materials</strong> below.</p> }
+      }
+    </div>
+  </section>
+
+  @if (points().length > 0) {
+    <section class="sidebar-section" aria-label="Drawing controls">
+      <div class="drawing-controls">
+        @if (!isClosed() && canUndo()) {
+          <button type="button" class="btn btn--ghost btn--sm" (click)="onUndo()">
+            <span class="icon icon--undo" aria-hidden="true"></span>
+            Undo Last Point
+          </button>
+        }
+        @if (isClosed()) {
+          <button type="button" class="btn btn--ghost btn--sm" (click)="onUnlock()">
+            <span class="icon icon--unlock" aria-hidden="true"></span>
+            Unlock Frame to Edit
+          </button>
+        }
+      </div>
+    </section>
+  }
+
+  @if (isClosed()) {
+    <section class="sidebar-section" aria-label="Edge measurements">
+      <h2 class="section-title">Edge Measurements</h2>
+      <app-measurement-panel [edges]="edges()" (measurementChange)="onMeasurementChange($event)" />
+    </section>
+
+    <section class="sidebar-section" aria-label="Corner angles">
+      <h2 class="section-title">
+        Corner Angles
+        @if (!hasNonRightAngles()) { <span class="title-hint">all right angles</span> }
+      </h2>
+      <app-corner-panel [corners]="corners()" (angleChanged)="onAngleChanged($event)"
+        (angleConfirmed)="onAngleConfirmed($event)" (cornerOverridden)="onCornerOverridden($event)" />
+    </section>
+
+    @if (validationResult()) {
+      <section class="sidebar-section" aria-label="Shape validation">
+        <h2 class="section-title">Validation</h2>
+        <app-validation-panel [result]="validationResult()" (suggestionApplied)="onSuggestionApplied($event)"
+          (proceedAnyway)="onProceedAnyway()" />
+      </section>
+    }
+
+    <section class="sidebar-section" aria-label="Edge role configuration">
+      <h2 class="section-title">Configure Edges</h2>
+      <div class="edge-role-list" role="list">
+        @for (edge of edges(); track edge.id) {
+          <div class="edge-role-item" role="listitem">
+            <div class="edge-role-meta">
+              <span class="edge-role-label">{{ edge.label }}</span>
+              @if (edge.realLengthMm) {
+                <span class="edge-role-length">{{ (edge.realLengthMm / 1000).toFixed(2) }}m</span>
+              }
+            </div>
+            <div class="edge-role-buttons" role="group" [attr.aria-label]="'Role for edge ' + edge.label">
+              @for (opt of edgeRoleOptions; track opt.value) {
+                <button type="button"
+                  [class]="'role-btn role-btn--' + opt.value + (getEdgeRole(edge.id) === opt.value ? ' role-btn--active' : '')"
+                  (click)="onSetEdgeRole(edge.id, opt.value)" [attr.aria-pressed]="getEdgeRole(edge.id) === opt.value"
+                  [style.--role-color]="opt.color">{{ opt.label }}</button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+      <div class="field-group" style="margin-top:12px">
+        <label for="sc-fall-direction" class="field-label">
+          Fall direction <span class="field-hint">(blank = auto)</span>
+        </label>
+        <select id="sc-fall-direction" class="field-input" (change)="onFallDirectionChange($event)">
+          <option value="" [selected]="!awningConfig().fallToEdgeId">Auto (from gutter role)</option>
+          @for (edge of edges(); track edge.id) {
+            <option [value]="edge.id" [selected]="awningConfig().fallToEdgeId === edge.id">
+              {{ edge.label }}{{ edge.realLengthMm ? ' · ' + (edge.realLengthMm / 1000).toFixed(2) + 'm' : '' }}
+            </option>
+          }
+        </select>
+      </div>
+    </section>
+  }
+
+  <section class="sidebar-section sidebar-section--collapsible" aria-label="Material settings">
+    <details>
+      <summary class="section-title section-title--toggle">
+        Material Settings
+        <span class="toggle-icon" aria-hidden="true">&#9660;</span>
+      </summary>
+      <div class="section-body">
+        <app-material-settings-panel [awningType]="awningType()" [ibrSettings]="ibrSettings()"
+          [louverSettings]="louverSettings()" (ibrSettingsChange)="onIbrSettingsChange($event)"
+          (louverSettingsChange)="onLouverSettingsChange($event)" />
+      </div>
+    </details>
+  </section>
+
+  <section class="sidebar-section" aria-label="Actions">
+    <div class="actions">
+      <button type="button" class="btn btn--secondary" (click)="onReset()">Reset Drawing</button>
+      <button type="button" class="btn btn--primary" [disabled]="!canCalculate()" (click)="onCalculate()"
+        [attr.aria-describedby]="!canCalculate() ? 'calc-hint' : null">Calculate Materials</button>
+      <button type="button" class="btn btn--outline" disabled title="Export coming in a future version"
+        aria-disabled="true">Export Estimate</button>
+    </div>
+    @if (!canCalculate() && currentStep() !== 'calculate') {
+      <p class="validation-hint" id="calc-hint" aria-live="polite">{{ validationMessage() }}</p>
+    }
+  </section>
+
+  @if (estimate()) {
+    <section class="sidebar-section" aria-label="Material estimate">
+      <h2 class="section-title section-title--success">Material Estimate</h2>
+      <app-estimate-summary [estimate]="estimate()!" />
+    </section>
+  }
+
+  }
+
+</aside>
