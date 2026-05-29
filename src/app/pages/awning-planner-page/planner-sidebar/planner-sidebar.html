@@ -10,41 +10,11 @@
        ═══════════════════════════════════════════════════════════════════ -->
   @if (wizardMode()) {
     
-    <!-- Step progress strip -->
-    <nav class="wizard-progress" aria-label="Wizard steps">
-      @for (panel of panelDefs; track panel.label; let i = $index) {
-        <button
-          type="button"
-          class="wp-step"
-          [class.wp-step--active]="panelIndex() === i"
-          [class.wp-step--done]="panelIndex() > i"
-          (click)="panelIndex() > i ? setPanel(i) : null"
-          [attr.aria-current]="panelIndex() === i ? 'step' : null"
-          [attr.aria-label]="
-            panel.label +
-            (panelIndex() > i ? ' (complete)' : panelIndex() === i ? ' (current)' : '')
-          "
-          [attr.title]="panel.hint"
-          [style.cursor]="panelIndex() > i ? 'pointer' : 'default'"
-        >
-          <span class="wp-step__bubble" aria-hidden="true">
-            @if (panelIndex() > i) {
-              <img src="/icons/check-bubble.svg" width="10" height="10" alt="" />
-            } @else {
-              {{ i + 1 }}
-            }
-          </span>
-          <span class="wp-step__label">{{ panel.label }}</span>
-        </button>
-        @if (i < panelDefs.length - 1) {
-          <div
-            class="wp-connector"
-            [class.wp-connector--done]="panelIndex() > i"
-            aria-hidden="true"
-          ></div>
-        }
-      }
-    </nav>
+    <app-step-progress-section
+      [panelDefs]="panelDefs"
+      [panelIndex]="panelIndex()"
+      (setPanel)="setPanel($event)">
+    </app-step-progress-section>
 
     <!-- Scrollable panel content -->
     <div

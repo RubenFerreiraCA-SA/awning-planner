@@ -20,9 +20,6 @@
 
 // ── Icon modifiers (base class is in styles.scss) ──────────────────────────
 .icon {
-  &--logo          { width: 24px; height: 24px; mask-image: url('/icons/awning-logo.svg'); }
-  &--view-list     { width: 15px; height: 15px; mask-image: url('/icons/view-list.svg'); }
-  &--view-steps    { width: 15px; height: 15px; mask-image: url('/icons/view-steps.svg'); }
   &--check-sm      { width: 12px; height: 12px; mask-image: url('/icons/check-sm.svg'); }
   &--undo          { width: 12px; height: 12px; mask-image: url('/icons/undo.svg'); }
   &--unlock        { width: 12px; height: 12px; mask-image: url('/icons/unlock.svg'); }
@@ -32,90 +29,6 @@
   &--info-circle   { width: 13px; height: 13px; mask-image: url('/icons/info-circle.svg'); }
 }
 
-// ── Wizard: step progress strip ─────────────────────────────────────────────
-
-.wizard-progress {
-  display: flex;
-  align-items: center;
-  padding: 14px 16px 12px;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  flex-shrink: 0;
-  gap: 0;
-}
-
-.wp-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: default;
-  flex-shrink: 0;
-
-  &:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-}
-
-.wp-step__bubble {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  background: #e2e8f0;
-  color: #94a3b8;
-  transition: background 0.2s, color 0.2s;
-
-  .wp-step--active & {
-    background: #2563eb;
-    color: #ffffff;
-  }
-
-  .wp-step--done & {
-    background: #16a34a;
-    color: #ffffff;
-  }
-}
-
-.wp-step__label {
-  font-size: 9px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #94a3b8;
-  transition: color 0.2s;
-
-  .wp-step--active & {
-    color: #2563eb;
-  }
-
-  .wp-step--done & {
-    color: #16a34a;
-  }
-}
-
-.wp-connector {
-  flex: 1;
-  height: 2px;
-  background: #e2e8f0;
-  margin: 0 4px;
-  margin-bottom: 16px; // align with bubble center
-  border-radius: 1px;
-  transition: background 0.2s;
-
-  &--done {
-    background: #16a34a;
-  }
-}
 
 // ── Wizard: scrollable panel ────────────────────────────────────────────────
 
