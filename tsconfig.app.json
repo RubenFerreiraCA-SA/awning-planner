@@ -9,7 +9,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "src/app/pages/awning-planner/awning-plannerts"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]

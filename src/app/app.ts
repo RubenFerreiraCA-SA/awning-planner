@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AwningPlannerPageComponent } from './pages/awning-planner-page/awning-planner-page';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AwningPlannerPageComponent],
-  template: '<app-awning-planner-page />',
+  imports: [RouterOutlet],
+  styleUrl: './app.scss',
+  templateUrl: './app.html',
 })
 export class App {}

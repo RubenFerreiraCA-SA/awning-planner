@@ -1,0 +1,4 @@
+<app-planner-sidebar class="page-sidebar" #sidebar />
+<main class="page-canvas" aria-label="Drawing area">
+  <app-drawing-plane [configureMode]="sidebar.isConfigureMode()" />
+</main>

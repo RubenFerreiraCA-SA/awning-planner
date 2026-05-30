@@ -6,12 +6,7 @@ import { PlannerSidebarComponent } from './planner-sidebar/planner-sidebar';
   selector: 'app-awning-planner-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PlannerSidebarComponent, DrawingPlaneComponent],
-  styleUrl: './awning-planner-page.scss',
-  template: `
-    <app-planner-sidebar class="page-sidebar" #sidebar />
-    <main class="page-canvas" aria-label="Drawing area">
-      <app-drawing-plane [configureMode]="sidebar.isConfigureMode()" />
-    </main>
-  `,
+  styleUrl: './awning-planner.scss',
+  templateUrl: './awning-planner.html',
 })
-export class AwningPlannerPageComponent {}
+export class AwningPlannerPage {}
