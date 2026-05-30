@@ -10,9 +10,9 @@ import { EstimateSummaryComponent } from '../../../components/estimate-summary/e
 import { MaterialSettingsPanelComponent } from '../../../components/material-settings-panel/material-settings-panel';
 import { MeasurementChange, MeasurementPanelComponent } from '../../../components/measurement-panel/measurement-panel';
 import { ValidationPanelComponent } from '../../../components/validation-panel/validation-panel';
-import { ProjectSetupView } from './views/awning-type-selector/project-setup.view';
 import { HeaderSection } from './sections/header-section/header-section';
 import { StepProgressSection } from './sections/step-progress-section/step-progress-section';
+import { ProjectSetupView } from './sections/views/awning-type-selector/project-setup.view';
 
 const STEP_ORDER: WorkflowStep[] = ['select-type', 'draw', 'close', 'measure', 'calculate'];
 function stepToPanel(step: WorkflowStep): number {

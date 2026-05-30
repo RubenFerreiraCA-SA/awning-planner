@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { AwningType } from '../../../../../models/awning.models';
+import { AwningType } from '../../../../../../models/awning.models';
 
 @Component({
   selector: 'app-project-setup-view',
