@@ -9,7 +9,17 @@
     </div>
   }
 
-  @if (awningType() && !isClosed() && shape().points.length === 0) {
+  @if (awningType() && !canDraw()) {
+    <div class="plane-overlay plane-overlay--hint" aria-live="polite">
+      <div class="plane-overlay__icon" aria-hidden="true">
+        <span class="icon icon--plane-select-type"></span>
+      </div>
+      <p class="plane-overlay__title">Confirm project setup to begin</p>
+      <p class="plane-overlay__hint">Complete the form on the left and click Confirm Project Setup.</p>
+    </div>
+  }
+
+  @if (canDraw() && !isClosed() && shape().points.length === 0) {
     <div class="plane-overlay plane-overlay--hint" aria-live="polite">
       <div class="plane-overlay__icon" aria-hidden="true">
         <span class="icon icon--plane-draw-points"></span>
@@ -30,10 +40,10 @@
   <svg
     #svgEl
     class="drawing-surface"
-    [class.drawing-surface--active]="!!awningType() && !isClosed()"
+    [class.drawing-surface--active]="canDraw() && !isClosed()"
     [class.drawing-surface--locked]="isClosed() && !configureMode()"
     [class.drawing-surface--configure]="isClosed() && configureMode()"
-    [class.drawing-surface--idle]="!awningType()"
+    [class.drawing-surface--idle]="!canDraw()"
     (click)="onSvgClick($event)"
     (mousemove)="onMouseMove($event)"
     (mouseleave)="onMouseLeave()"
@@ -291,7 +301,7 @@
         <rect x="12" y="12" width="110" height="24" rx="12" fill="#16a34a"/>
         <text x="67" y="28" text-anchor="middle" class="status-text">Frame Locked</text>
       </g>
-    } @else if (awningType() && shape().points.length > 0) {
+    } @else if (canDraw() && shape().points.length > 0) {
       <g class="status-badge">
         <rect x="12" y="12" width="130" height="24" rx="12" fill="#2563eb"/>
         <text x="77" y="28" text-anchor="middle" class="status-text">

@@ -75,6 +75,7 @@ export class DrawingPlaneComponent {
   private readonly geometry = inject(GeometryCalculationService);
 
   readonly configureMode = input<boolean>(false);
+  readonly canDraw = input<boolean>(false);
 
   readonly shape = this.state.shape;
   readonly awningConfig = this.state.awningConfig;
@@ -502,8 +503,8 @@ export class DrawingPlaneComponent {
   }
 
   onSvgClick(event: MouseEvent): void {
+    if (!this.canDraw()) return;
     if (this.state.isClosed()) return;
-    if (!this.state.awningType()) return;
     const { x, y } = this.svgCoords(event);
     if (this.state.points().length >= 3 && this.state.tryCloseShape(x, y)) return;
     this.state.addPoint(x, y);
@@ -518,7 +519,7 @@ export class DrawingPlaneComponent {
   }
 
   onMouseMove(event: MouseEvent): void {
-    if (this.state.isClosed()) return;
+    if (!this.canDraw() || this.state.isClosed()) return;
     this._cursor.set(this.svgCoords(event));
   }
 

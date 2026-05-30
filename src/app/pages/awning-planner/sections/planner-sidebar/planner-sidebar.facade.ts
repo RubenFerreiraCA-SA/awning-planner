@@ -87,6 +87,7 @@ export class PlannerSidebarFacade {
   ];
 
   readonly isConfigureMode = computed(() => this._panelIndex() === 3);
+  readonly canDraw = computed(() => this._panelIndex() >= 1);
 
   readonly canAdvance = computed(() => {
     switch (this._panelIndex()) {

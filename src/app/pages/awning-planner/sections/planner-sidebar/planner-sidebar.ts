@@ -26,4 +26,5 @@ export class PlannerSidebarComponent {
   // Public bridge used by the parent page template via #sidebar.
   // Keep this here so the page does not need to know about the sidebar facade.
   readonly isConfigureMode = this.vm.isConfigureMode;
+  readonly canDraw = this.vm.canDraw;
 }
