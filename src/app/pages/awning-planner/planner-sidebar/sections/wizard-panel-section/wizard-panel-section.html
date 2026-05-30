@@ -18,6 +18,7 @@
               (typeChange)="vm.onTypeChange($event)"
               (customerNameChange)="vm.onCustomerNameChange($event)"
               (projectNameChange)="vm.onProjectNameChange($event)"
+              (confirmSetup)="vm.nextPanel()"
             />
           </div>
         }
@@ -70,55 +71,7 @@
           </div>
           <div class="panel-body">
             @if (vm.isClosed()) {
-              <div class="drawing-controls" style="margin-bottom: 14px">
-                <button type="button" class="btn btn--ghost btn--sm" (click)="vm.onUnlock()">
-                  <span class="icon icon--unlock" aria-hidden="true"></span>
-                  Unlock Frame to Edit
-                </button>
-              </div>
-
-              <p class="panel-section-label">Edge Lengths</p>
-              <app-measurement-panel
-                [edges]="vm.edges()"
-                (measurementChange)="vm.onMeasurementChange($event)"
-              />
-
-              <div class="panel-divider"></div>
-
-              <p class="panel-section-label">
-                Corner Angles
-                @if (!vm.hasNonRightAngles()) {
-                  <span class="title-hint">all right angles</span>
-                }
-              </p>
-              <app-corner-panel
-                [corners]="vm.corners()"
-                (angleChanged)="vm.onAngleChanged($event)"
-                (angleConfirmed)="vm.onAngleConfirmed($event)"
-                (cornerOverridden)="vm.onCornerOverridden($event)"
-              />
-
-              @if (vm.validationResult()) {
-                <div class="panel-divider"></div>
-                <p class="panel-section-label">Validation</p>
-                <app-validation-panel
-                  [result]="vm.validationResult()"
-                  (suggestionApplied)="vm.onSuggestionApplied($event)"
-                  (proceedAnyway)="vm.onProceedAnyway()"
-                />
-              }
-
-              @if (vm.canAdvance()) {
-                <div class="panel-divider"></div>
-                <button
-                  type="button"
-                  class="btn btn--confirm-layout"
-                  (click)="vm.nextPanel()"
-                >
-                  Confirm Measurements &amp; Continue
-                  <span class="icon icon--chevron-right" aria-hidden="true"></span>
-                </button>
-              }
+              <app-measure-form-view (proceed)="vm.nextPanel()" />
             } @else {
               <div class="instructions">
                 <p>Draw and close the frame first — go back to the <strong>Draw</strong> step.</p>

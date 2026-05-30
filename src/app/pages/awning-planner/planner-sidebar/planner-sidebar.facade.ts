@@ -1,5 +1,10 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
-import { AwningType, IbrSettings, LouverSettings, MountingType } from '../../../models/awning.models';
+import {
+  AwningType,
+  IbrSettings,
+  LouverSettings,
+  MountingType,
+} from '../../../models/awning.models';
 import { ValidationSuggestion, WorkflowStep } from '../../../models/drawing.models';
 import { AngleChange } from '../../../components/corner-panel/corner-panel';
 import { MeasurementChange } from '../../../components/measurement-panel/measurement-panel';
@@ -40,23 +45,25 @@ export class PlannerSidebarFacade {
 
   readonly currentStepIndex = computed(() => STEP_ORDER.indexOf(this.state.currentStep()));
 
-  readonly canUndo = computed(
-    () => !this.state.isClosed() && this.state.points().length > 0,
-  );
+  readonly canUndo = computed(() => !this.state.isClosed() && this.state.points().length > 0);
 
   readonly validationMessage = computed(() => {
     switch (this.state.currentStep()) {
-      case 'select-type': return 'Select an awning type to continue.';
-      case 'draw': return 'Click the drawing plane to add points.';
-      case 'close': return 'Add at least 3 points, then click the first point to close the frame.';
+      case 'select-type':
+        return 'Select an awning type to continue.';
+      case 'draw':
+        return 'Click the drawing plane to add points.';
+      case 'close':
+        return 'Add at least 3 points, then click the first point to close the frame.';
       case 'measure': {
-        const allEdges = this.state.edges().every(e => (e.realLengthMm ?? 0) > 0);
-        const allCorners = this.state.corners().every(c => c.confirmed);
+        const allEdges = this.state.edges().every((e) => (e.realLengthMm ?? 0) > 0);
+        const allCorners = this.state.corners().every((c) => c.confirmed);
         if (!allEdges) return 'Enter the length for each edge.';
         if (!allCorners) return 'Confirm all corner angles to continue.';
         return '';
       }
-      default: return '';
+      default:
+        return '';
     }
   });
 
@@ -88,23 +95,37 @@ export class PlannerSidebarFacade {
 
   readonly canAdvance = computed(() => {
     switch (this._panelIndex()) {
-      case 0: return this.state.awningType() !== null;
-      case 1: return this.state.isClosed();
-      case 2: return this.state.canCalculate();
-      case 3: return false; // advance only via Confirm Layout button
-      case 4: return this.state.estimate() !== null;
-      default: return false;
+      case 0:
+        return !!this.state.awningType()
+          && this.state.customerName().trim().length > 0
+          && this.state.projectName().trim().length > 0;
+      case 1:
+        return this.state.isClosed();
+      case 2:
+        return this.state.canCalculate();
+      case 3:
+        return false; // advance only via Confirm Layout button
+      case 4:
+        return this.state.estimate() !== null;
+      default:
+        return false;
     }
   });
 
   readonly advanceHint = computed(() => {
     switch (this._panelIndex()) {
-      case 0: return 'Select an awning type to continue.';
-      case 1: return 'Draw and close the frame on the canvas.';
-      case 2: return this.validationMessage();
-      case 3: return '';
-      case 4: return 'Click Calculate Materials to generate the estimate.';
-      default: return '';
+      case 0:
+        return 'Select an awning type to continue.';
+      case 1:
+        return 'Draw and close the frame on the canvas.';
+      case 2:
+        return this.validationMessage();
+      case 3:
+        return '';
+      case 4:
+        return 'Click Calculate Materials to generate the estimate.';
+      default:
+        return '';
     }
   });
 
@@ -117,13 +138,19 @@ export class PlannerSidebarFacade {
   constructor() {
     effect(() => {
       if (!this._wizardMode()) return;
+
       const panelForStep = stepToPanel(this.state.currentStep());
       const current = this._panelIndex();
+
+      // Do not auto-move from Setup to Draw.
+      // Project Setup must advance only via the confirm button.
+      if (current === 0) {
+        return;
+      }
+
       if (current < panelForStep && panelForStep <= 2) {
-        // Auto-advance through Setup/Draw/Measure only — Config+ requires explicit user action
         this._panelIndex.set(panelForStep);
       } else if (current > panelForStep && panelForStep < 3) {
-        // Sync backward for early steps when state regresses
         this._panelIndex.set(panelForStep);
       }
     });
@@ -138,7 +165,7 @@ export class PlannerSidebarFacade {
   }
 
   toggleViewMode(): void {
-    this._wizardMode.update(v => !v);
+    this._wizardMode.update((v) => !v);
   }
 
   setPanel(index: number): void {
@@ -149,13 +176,13 @@ export class PlannerSidebarFacade {
 
   nextPanel(): void {
     if (this.canAdvance() && this._panelIndex() < this.panelDefs.length - 1) {
-      this._panelIndex.update(i => i + 1);
+      this._panelIndex.update((i) => i + 1);
     }
   }
 
   prevPanel(): void {
     if (this._panelIndex() > 0) {
-      this._panelIndex.update(i => i - 1);
+      this._panelIndex.update((i) => i - 1);
     }
   }
 
@@ -256,25 +283,38 @@ export class PlannerSidebarFacade {
     const corners = this.state.corners();
     const config = this.state.awningConfig();
     const mmVerts = this.geometry.reconstructVerticesMm(edges, corners, points);
-    const areaSqm = mmVerts.length >= 3
-      ? this.geometry.shoelaceArea(mmVerts) / 1_000_000
-      : this.geometry.realAreaSqm(this.geometry.shoelaceArea(points), this.geometry.averageScaleMmPerPixel(edges));
+    const areaSqm =
+      mmVerts.length >= 3
+        ? this.geometry.shoelaceArea(mmVerts) / 1_000_000
+        : this.geometry.realAreaSqm(
+            this.geometry.shoelaceArea(points),
+            this.geometry.averageScaleMmPerPixel(edges),
+          );
     const perimeterM = this.geometry.perimeterMm(edges) / 1000;
     const { widthMm, projectionMm } = this.geometry.computeDimensions(edges, corners, points);
     const widthM = widthMm / 1000;
     const projectionM = projectionMm / 1000;
 
-    const hasWallEdge = Object.values(config.edgeRoles).some(r => r === 'wall');
-    const mountingType: MountingType = hasWallEdge ? 'wall-mounted' : this.state.ibrSettings().mountingType;
+    const hasWallEdge = Object.values(config.edgeRoles).some((r) => r === 'wall');
+    const mountingType: MountingType = hasWallEdge
+      ? 'wall-mounted'
+      : this.state.ibrSettings().mountingType;
 
     const type = this.state.awningType()!;
     const estimate =
       type === 'IBR'
-        ? this.estimator.estimateIbr(areaSqm, perimeterM, projectionM, widthM,
+        ? this.estimator.estimateIbr(
+            areaSqm,
+            perimeterM,
+            projectionM,
+            widthM,
             { ...this.state.ibrSettings(), mountingType },
-            config.purlinCountOverride ?? undefined)
-        : this.estimator.estimateLouver(areaSqm, perimeterM, projectionM, widthM,
-            { ...this.state.louverSettings(), mountingType });
+            config.purlinCountOverride ?? undefined,
+          )
+        : this.estimator.estimateLouver(areaSqm, perimeterM, projectionM, widthM, {
+            ...this.state.louverSettings(),
+            mountingType,
+          });
 
     this.state.setEstimate(estimate);
     if (this._wizardMode()) {

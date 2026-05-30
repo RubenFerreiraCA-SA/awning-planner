@@ -1,10 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CornerPanelComponent } from '../../../../../components/corner-panel/corner-panel';
 import { EstimateSummaryComponent } from '../../../../../components/estimate-summary/estimate-summary';
 import { MaterialSettingsPanelComponent } from '../../../../../components/material-settings-panel/material-settings-panel';
-import { MeasurementPanelComponent } from '../../../../../components/measurement-panel/measurement-panel';
-import { ValidationPanelComponent } from '../../../../../components/validation-panel/validation-panel';
-import { ProjectSetupView } from '../views/awning-type-selector/project-setup.view';
+import { ProjectSetupView } from '../views/awning-type-selector/project-setup';
+import { MeasureFormView } from '../views/measure-form/measure-form.view';
 import { PlannerSidebarFacade } from '../../planner-sidebar.facade';
 
 @Component({
@@ -12,14 +10,12 @@ import { PlannerSidebarFacade } from '../../planner-sidebar.facade';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ProjectSetupView,
-    MeasurementPanelComponent,
-    CornerPanelComponent,
-    ValidationPanelComponent,
+    MeasureFormView,
     MaterialSettingsPanelComponent,
     EstimateSummaryComponent,
   ],
   templateUrl: './wizard-panel-section.html',
-  styleUrl: '../../planner-sidebar.scss',
+  styleUrl:  './wizard-panel-section.scss',
 })
 export class WizardPanelSection {
   readonly vm = inject(PlannerSidebarFacade);

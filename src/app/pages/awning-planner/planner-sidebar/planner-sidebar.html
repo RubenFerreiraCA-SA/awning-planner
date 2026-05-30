@@ -3,21 +3,27 @@
   [class.sidebar--scroll]="!vm.wizardMode()"
   aria-label="Awning Planner Controls"
 >
-  <app-header-section
-    [wizardMode]="vm.wizardMode()"
-    (toggleViewMode)="vm.toggleViewMode()"
-  />
+  <div class="sidebar__header">
+    <app-header-section [wizardMode]="vm.wizardMode()" (toggleViewMode)="vm.toggleViewMode()" />
 
-  @if (vm.wizardMode()) {
-    <app-step-progress-section
-      [panelDefs]="vm.panelDefs"
-      [panelIndex]="vm.panelIndex()"
-      (setPanel)="vm.setPanel($event)"
-    />
+    @if (vm.wizardMode()) {
+      <app-step-progress-section
+        [panelDefs]="vm.panelDefs"
+        [panelIndex]="vm.panelIndex()"
+        (setPanel)="vm.setPanel($event)"
+      />
+    }
+  </div>
 
-    <app-wizard-panel-section />
+  <div class="sidebar__content">
+    @if (vm.wizardMode()) {
+      <app-wizard-panel-section />
+    } @else {
+      <app-scroll-mode-section />
+    }
+  </div>
+
+  <div class="sidebar__footer">
     <app-wizard-footer-section />
-  } @else {
-    <app-scroll-mode-section />
-  }
+  </div>
 </aside>

@@ -5,7 +5,7 @@ import { PlannerSidebarFacade } from '../../planner-sidebar.facade';
   selector: 'app-wizard-footer-section',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './wizard-footer-section.html',
-  styleUrl: '../../planner-sidebar.scss',
+  styleUrl: './wizard-footer-section.scss',
 })
 export class WizardFooterSection {
   readonly vm = inject(PlannerSidebarFacade);

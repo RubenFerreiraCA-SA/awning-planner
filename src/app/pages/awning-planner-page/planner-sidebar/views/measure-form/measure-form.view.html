@@ -1,0 +1,139 @@
+<div class="drawing-controls">
+  <button type="button" class="btn btn--ghost btn--sm" (click)="onUnlock()">
+    <span class="icon icon--unlock" aria-hidden="true"></span>
+    Unlock Frame to Edit
+  </button>
+</div>
+
+<!-- ── Edge Lengths ──────────────────────────────────────────────────────── -->
+<p class="panel-section-label">Edge Lengths</p>
+<div class="mf-edges" [formGroup]="edgesGroup" role="group" aria-label="Edge measurements">
+  @for (edge of edges(); track edge.id) {
+    <div
+      class="edge-field"
+      [class.edge-field--missing]="
+        edgesGroup.get(edge.id)?.invalid && edgesGroup.get(edge.id)?.dirty
+      "
+    >
+      <label [for]="'edge-' + edge.id" class="edge-label">
+        <span class="edge-name">Edge {{ edge.label }}</span>
+        @if (!(edge.realLengthMm ?? 0)) {
+          <span class="edge-required" aria-hidden="true">required</span>
+        }
+      </label>
+      <div class="edge-input-row">
+        <input
+          [id]="'edge-' + edge.id"
+          [formControlName]="edge.id"
+          type="number"
+          min="1"
+          max="99999"
+          step="1"
+          placeholder="e.g. 3500"
+          class="edge-input"
+          [attr.aria-describedby]="'edge-unit-' + edge.id"
+        />
+        <span [id]="'edge-unit-' + edge.id" class="edge-unit">mm</span>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- ── Corner Angles ─────────────────────────────────────────────────────── -->
+<div class="panel-divider"></div>
+<p class="panel-section-label">
+  Corner Angles
+  @if (!hasNonRightAngles()) {
+    <span class="title-hint">all right angles</span>
+  }
+</p>
+<div class="corner-panel" role="group" aria-label="Corner angles">
+  @for (corner of corners(); track corner.pointId) {
+    <div
+      class="corner-row"
+      [class.corner-row--confirmed]="corner.confirmed"
+      [class.corner-row--pending]="!corner.confirmed"
+    >
+      <span class="corner-label" [attr.aria-label]="'Corner ' + corner.label">
+        {{ corner.label }}
+      </span>
+
+      @if (corner.isAssumedRightAngle && corner.confirmed) {
+        <span class="angle-badge angle-badge--right" aria-label="Right angle assumed">
+          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+            <path d="M2 10 V2 H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <path d="M2 5 H5 V2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+          </svg>
+          90° assumed
+        </span>
+        <button
+          type="button"
+          class="btn-override"
+          (click)="onOverrideCorner(corner.pointId)"
+          [attr.aria-label]="'Override right angle for corner ' + corner.label"
+        >Override</button>
+      }
+
+      @if (!corner.isAssumedRightAngle && corner.confirmed) {
+        <span class="confirmed-tag">
+          {{ corner.userAngleDeg | number:'1.1-1' }}° confirmed
+        </span>
+        <button
+          type="button"
+          class="btn-override"
+          (click)="onOverrideCorner(corner.pointId)"
+          [attr.aria-label]="'Edit angle for corner ' + corner.label"
+        >Edit</button>
+      }
+
+      @if (!corner.isAssumedRightAngle && !corner.confirmed) {
+        <div class="angle-input-group">
+          <span class="detected-hint">Pixel: {{ corner.pixelAngleDeg | number:'1.1-1' }}°</span>
+          <input
+            type="number"
+            min="5"
+            max="355"
+            step="0.5"
+            class="angle-input"
+            [id]="'corner-' + corner.pointId"
+            [value]="corner.userAngleDeg ?? (corner.pixelAngleDeg | number:'1.1-1')"
+            [attr.aria-label]="'Angle at corner ' + corner.label + ' in degrees'"
+            (input)="onAngleInput(corner.pointId, $event)"
+          />
+          <span class="unit">°</span>
+          <button
+            type="button"
+            class="btn-confirm"
+            [disabled]="!getCornerGroup(corner.pointId)?.get('angleDeg')?.valid"
+            (click)="onConfirmAngle(corner.pointId)"
+            [attr.aria-label]="'Confirm angle for corner ' + corner.label"
+          >Confirm</button>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- ── Validation ────────────────────────────────────────────────────────── -->
+@if (validationResult()) {
+  <div class="panel-divider"></div>
+  <p class="panel-section-label">Validation</p>
+  <app-validation-panel
+    [result]="validationResult()!"
+    (suggestionApplied)="onSuggestionApplied($event)"
+    (proceedAnyway)="onProceedAnyway()"
+  />
+}
+
+<!-- ── Proceed ───────────────────────────────────────────────────────────── -->
+@if (canProceed()) {
+  <div class="panel-divider"></div>
+  <button
+    type="button"
+    class="btn btn--confirm-layout"
+    (click)="proceed.emit()"
+  >
+    Confirm Measurements &amp; Continue
+    <span class="icon icon--chevron-right" aria-hidden="true"></span>
+  </button>
+}
