@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DrawingPlaneComponent } from './drawing-plane/drawing-plane';
-import { PlannerSidebarComponent } from './planner-sidebar/planner-sidebar';
+import { DrawingPlaneComponent } from './sections/drawing-plane/drawing-plane';
+import { PlannerSidebarComponent } from './sections/planner-sidebar/planner-sidebar';
 
 @Component({
   selector: 'app-awning-planner-page',

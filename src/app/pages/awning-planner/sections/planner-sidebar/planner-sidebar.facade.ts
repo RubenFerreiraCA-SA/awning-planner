@@ -1,17 +1,12 @@
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
-import {
-  AwningType,
-  IbrSettings,
-  LouverSettings,
-  MountingType,
-} from '../../../models/awning.models';
-import { ValidationSuggestion, WorkflowStep } from '../../../models/drawing.models';
-import { AngleChange } from '../../../components/corner-panel/corner-panel';
-import { MeasurementChange } from '../../../components/measurement-panel/measurement-panel';
-import { EdgeRole } from '../../../models/awning-config.models';
-import { DrawingStateService } from '../../../services/drawing-state.service';
-import { GeometryCalculationService } from '../../../services/geometry-calculation.service';
-import { MaterialEstimatorService } from '../../../services/material-estimator.service';
+import { Injectable, inject, computed, signal, effect } from "@angular/core";
+import { AngleChange } from "../../../../components/corner-panel/corner-panel";
+import { MeasurementChange } from "../../../../components/measurement-panel/measurement-panel";
+import { EdgeRole } from "../../../../models/awning-config.models";
+import { AwningType, IbrSettings, LouverSettings, MountingType } from "../../../../models/awning.models";
+import { WorkflowStep, ValidationSuggestion } from "../../../../models/drawing.models";
+import { DrawingStateService } from "../../../../services/drawing-state.service";
+import { GeometryCalculationService } from "../../../../services/geometry-calculation.service";
+import { MaterialEstimatorService } from "../../../../services/material-estimator.service";
 
 const STEP_ORDER: WorkflowStep[] = ['select-type', 'draw', 'close', 'measure', 'calculate'];
 function stepToPanel(step: WorkflowStep): number {

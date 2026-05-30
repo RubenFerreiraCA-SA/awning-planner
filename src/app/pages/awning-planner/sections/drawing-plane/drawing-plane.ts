@@ -9,10 +9,10 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { DrawingCorner, DrawingPoint } from '../../../models/drawing.models';
-import { EdgeRole } from '../../../models/awning-config.models';
-import { DrawingStateService } from '../../../services/drawing-state.service';
-import { GeometryCalculationService } from '../../../services/geometry-calculation.service';
+import { DrawingCorner, DrawingPoint } from '../../../../models/drawing.models';
+import { EdgeRole } from '../../../../models/awning-config.models';
+import { DrawingStateService } from '../../../../services/drawing-state.service';
+import { GeometryCalculationService } from '../../../../services/geometry-calculation.service';
 
 interface EdgeLabel {
   x: number;

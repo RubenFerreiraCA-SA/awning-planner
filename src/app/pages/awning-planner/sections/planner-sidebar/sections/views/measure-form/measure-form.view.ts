@@ -16,9 +16,9 @@ import {
 } from '@angular/forms';
 import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DecimalPipe } from '@angular/common';
-import { DrawingStateService } from '../../../../../services/drawing-state.service';
-import { ValidationPanelComponent } from '../../../../../components/validation-panel/validation-panel';
-import { ValidationSuggestion } from '../../../../../models/drawing.models';
+import { ValidationPanelComponent } from '../../../../../../../components/validation-panel/validation-panel';
+import { ValidationSuggestion } from '../../../../../../../models/drawing.models';
+import { DrawingStateService } from '../../../../../../../services/drawing-state.service';
 
 function confirmedValidator(control: AbstractControl): ValidationErrors | null {
   return (control as FormGroup).get('confirmed')?.value === true
