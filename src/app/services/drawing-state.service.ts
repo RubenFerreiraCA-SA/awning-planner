@@ -53,7 +53,7 @@ export class DrawingStateService {
   readonly currentStep = computed<WorkflowStep>(() => {
     if (!this._awningType()) return 'select-type';
     if (!this._isClosed()) {
-      return this._points().length === 0 ? 'draw' : 'close';
+      return this._points().length < 3 ? 'draw' : 'close';
     }
     const allMeasured = this._edges().every(e => (e.realLengthMm ?? 0) > 0);
     const allConfirmed = this._corners().every(c => c.confirmed);

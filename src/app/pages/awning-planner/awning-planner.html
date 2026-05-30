@@ -1,4 +1,8 @@
-<app-planner-sidebar class="page-sidebar" #sidebar />
+<app-planner-sidebar class="page-sidebar" />
+
 <main class="page-canvas">
-  <app-drawing-plane [configureMode]="sidebar.isConfigureMode()" [canDraw]="sidebar.canDraw()" />
+  <app-drawing-plane
+    [configureMode]="vm.isConfigureMode()"
+    [canDraw]="vm.canDraw()"
+  />
 </main>

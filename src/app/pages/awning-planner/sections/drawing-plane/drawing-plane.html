@@ -1,21 +1,11 @@
 <div class="plane-wrapper">
-  @if (!awningType()) {
-    <div class="plane-overlay" aria-live="polite">
-      <div class="plane-overlay__icon" aria-hidden="true">
-        <span class="icon icon--plane-select-type"></span>
-      </div>
-      <p class="plane-overlay__title">Select an awning type to begin</p>
-      <p class="plane-overlay__hint">Use the panel on the left to choose IBR or Louver.</p>
-    </div>
-  }
-
-  @if (awningType() && !canDraw()) {
+  @if (!canDraw() && shape().points.length === 0) {
     <div class="plane-overlay plane-overlay--hint" aria-live="polite">
       <div class="plane-overlay__icon" aria-hidden="true">
         <span class="icon icon--plane-select-type"></span>
       </div>
-      <p class="plane-overlay__title">Confirm project setup to begin</p>
-      <p class="plane-overlay__hint">Complete the form on the left and click Confirm Project Setup.</p>
+      <p class="plane-overlay__title">Complete project setup to begin</p>
+      <p class="plane-overlay__hint">Enter the project details, choose an awning type, then click Confirm Project Setup.</p>
     </div>
   }
 

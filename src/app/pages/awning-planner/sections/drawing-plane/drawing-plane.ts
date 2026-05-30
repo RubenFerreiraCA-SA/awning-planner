@@ -512,6 +512,8 @@ export class DrawingPlaneComponent {
 
   onEdgeClick(event: MouseEvent, edgeId: string): void {
     event.stopPropagation();
+    if (!this.configureMode() || !this.state.isClosed()) return;
+
     const roles: EdgeRole[] = ['unassigned', 'wall', 'gutter', 'open-side'];
     const current = this.getEdgeRole(edgeId);
     const next = roles[(roles.indexOf(current) + 1) % roles.length];
@@ -519,7 +521,11 @@ export class DrawingPlaneComponent {
   }
 
   onMouseMove(event: MouseEvent): void {
-    if (!this.canDraw() || this.state.isClosed()) return;
+    if (!this.canDraw() || this.state.isClosed()) {
+      this._cursor.set(null);
+      return;
+    }
+
     this._cursor.set(this.svgCoords(event));
   }
 

@@ -1,0 +1,42 @@
+<form class="project-setup-form">
+  <div class="field-group">
+    <label for="ps-customer-name" class="field-label">Customer Name</label>
+
+    <input
+      id="ps-customer-name"
+      type="text"
+      class="field-input"
+      placeholder="e.g. John Smith"
+      [value]="customerName()"
+      (input)="onCustomerNameInput($event)"
+    />
+  </div>
+
+  <div class="field-group">
+    <label for="ps-project-name" class="field-label">Project Name</label>
+
+    <input
+      id="ps-project-name"
+      type="text"
+      class="field-input"
+      placeholder="e.g. Smith Residence Patio"
+      [value]="projectName()"
+      (input)="onProjectNameInput($event)"
+    />
+  </div>
+
+  <app-type-selection-view
+    [selectedType]="selectedType()"
+    (typeChange)="typeChange.emit($event)"
+  />
+
+  @if (formValid()) {
+    <button
+      type="button"
+      class="btn btn--primary project-setup-confirm"
+      (click)="onConfirm()"
+    >
+      Confirm Project Setup
+    </button>
+  }
+</form>

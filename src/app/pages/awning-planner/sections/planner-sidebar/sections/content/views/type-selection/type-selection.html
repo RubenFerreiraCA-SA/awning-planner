@@ -1,0 +1,14 @@
+<div class="field-group">
+  <label for="ps-awning-type" class="field-label">Awning Type</label>
+
+  <select
+    id="ps-awning-type"
+    class="field-input"
+    [value]="selectedType() ?? ''"
+    (change)="onTypeChange($event)"
+  >
+    <option value="" disabled>Select awning type</option>
+    <option value="IBR">IBR Awning</option>
+    <option value="LOUVER">Louver Awning</option>
+  </select>
+</div>

@@ -1,0 +1,145 @@
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.header-spacer {
+  flex: 1;
+}
+
+.sidebar-logo {
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #64748b;
+  background: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover {
+    background: #e2e8f0;
+    color: #374151;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+}
+
+.icon {
+  &--logo { width: 24px; height: 24px; mask-image: url('/icons/awning-logo.svg'); }
+  &--view-list { width: 15px; height: 15px; mask-image: url('/icons/view-list.svg'); }
+  &--view-steps { width: 15px; height: 15px; mask-image: url('/icons/view-steps.svg'); }
+}
+
+.wizard-progress {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  gap: 0;
+}
+
+.wp-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: default;
+  flex-shrink: 0;
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+.wp-step__bubble {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #94a3b8;
+  transition: background 0.2s, color 0.2s;
+
+  .wp-step--active & {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .wp-step--done & {
+    background: #16a34a;
+    color: #ffffff;
+  }
+}
+
+.wp-step__label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  transition: color 0.2s;
+
+  .wp-step--active & {
+    color: #2563eb;
+  }
+
+  .wp-step--done & {
+    color: #16a34a;
+  }
+}
+
+.wp-connector {
+  flex: 1;
+  height: 2px;
+  background: #e2e8f0;
+  margin: 0 4px 16px;
+  border-radius: 1px;
+  transition: background 0.2s;
+
+  &--done {
+    background: #16a34a;
+  }
+}

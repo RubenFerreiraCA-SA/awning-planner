@@ -45,7 +45,7 @@ export class PlannerSidebarFacade {
   readonly validationMessage = computed(() => {
     switch (this.state.currentStep()) {
       case 'select-type':
-        return 'Select an awning type to continue.';
+        return 'Complete the project setup form to continue.';
       case 'draw':
         return 'Click the drawing plane to add points.';
       case 'close':
@@ -86,8 +86,9 @@ export class PlannerSidebarFacade {
     { label: 'Results', hint: 'Material estimate & cost' },
   ];
 
+  readonly setupConfirmed = computed(() => this._panelIndex() > 0);
   readonly isConfigureMode = computed(() => this._panelIndex() === 3);
-  readonly canDraw = computed(() => this._panelIndex() >= 1);
+  readonly canDraw = computed(() => this._panelIndex() === 1 && !!this.state.awningType());
 
   readonly canAdvance = computed(() => {
     switch (this._panelIndex()) {
@@ -111,7 +112,7 @@ export class PlannerSidebarFacade {
   readonly advanceHint = computed(() => {
     switch (this._panelIndex()) {
       case 0:
-        return 'Select an awning type to continue.';
+        return 'Complete the project setup form to continue.';
       case 1:
         return 'Draw and close the frame on the canvas.';
       case 2:
@@ -167,6 +168,12 @@ export class PlannerSidebarFacade {
   setPanel(index: number): void {
     if (index >= 0 && index < this.panelDefs.length) {
       this._panelIndex.set(index);
+    }
+  }
+
+  confirmProjectSetup(): void {
+    if (this.canAdvance() && this._panelIndex() === 0) {
+      this._panelIndex.set(1);
     }
   }
 
@@ -234,6 +241,9 @@ export class PlannerSidebarFacade {
 
   onUnlock(): void {
     this.state.unlockDrawing();
+    if (this._wizardMode()) {
+      this._panelIndex.set(1);
+    }
   }
 
   onUndo(): void {
@@ -242,6 +252,7 @@ export class PlannerSidebarFacade {
 
   onReset(): void {
     this.state.resetDrawing();
+    this._panelIndex.set(0);
   }
 
   // ─── Configure panel ───────────────────────────────────────────────────────

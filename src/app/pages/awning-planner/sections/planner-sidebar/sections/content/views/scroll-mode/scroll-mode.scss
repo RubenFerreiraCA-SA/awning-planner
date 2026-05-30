@@ -1,0 +1,132 @@
+.sidebar-section {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e8f0;
+
+  &--collapsible {
+    padding: 0;
+
+    details {
+      padding: 0;
+
+      &[open] summary .toggle-icon {
+        transform: rotate(180deg);
+      }
+    }
+
+    summary {
+      padding: 14px 16px;
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      &:hover {
+        background: #f1f5f9;
+      }
+    }
+
+    .section-body {
+      padding: 0 16px 14px;
+    }
+  }
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #64748b;
+  margin: 0 0 10px;
+
+  &--toggle {
+    margin-bottom: 0;
+  }
+
+  &--success {
+    color: #15803d;
+  }
+}
+
+.toggle-icon {
+  font-size: 10px;
+  transition: transform 0.2s;
+  color: #94a3b8;
+}
+
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &--pending {
+    .step-indicator { background: #e2e8f0; color: #94a3b8; }
+    .step-label { color: #94a3b8; }
+  }
+
+  &--active {
+    .step-indicator { background: #2563eb; color: #ffffff; }
+    .step-label { color: #1e293b; font-weight: 600; }
+  }
+
+  &--complete {
+    .step-indicator { background: #16a34a; color: #ffffff; }
+    .step-label { color: #64748b; text-decoration: line-through; text-decoration-color: #86efac; }
+  }
+}
+
+.step-indicator {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.step-label {
+  font-size: 12px;
+  transition: color 0.2s;
+}
+
+.title-hint {
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #16a34a;
+  margin-left: 6px;
+}
+
+.drawing-controls,
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.drawing-controls {
+  flex-wrap: wrap;
+}
+
+.actions {
+  flex-direction: column;
+}
