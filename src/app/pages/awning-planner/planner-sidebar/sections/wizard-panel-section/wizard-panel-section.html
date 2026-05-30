@@ -1,0 +1,312 @@
+    <!-- Scrollable panel content -->
+    <div
+      class="wizard-panel"
+      role="region"
+      [attr.aria-label]="vm.panelDefs[vm.panelIndex()].label + ' panel'"
+    >
+      @switch (vm.panelIndex()) {
+        <!-- ── Panel 0: Setup ─────────────────────────────────────────── -->
+        @case (0) {
+          <div class="panel-header">
+            <h2 class="panel-title">Project Setup</h2>
+          </div>
+          <div class="panel-body">
+            <app-project-setup-view
+              [selectedType]="vm.awningType()"
+              [customerName]="vm.customerName()"
+              [projectName]="vm.projectName()"
+              (typeChange)="vm.onTypeChange($event)"
+              (customerNameChange)="vm.onCustomerNameChange($event)"
+              (projectNameChange)="vm.onProjectNameChange($event)"
+            />
+          </div>
+        }
+
+        <!-- ── Panel 1: Draw ──────────────────────────────────────────── -->
+        @case (1) {
+          <div class="panel-header">
+            <h2 class="panel-title">Draw Your Outline</h2>
+          </div>
+          <div class="panel-body">
+            <div class="instructions">
+              @if (vm.isClosed()) {
+                <p class="instructions--success">
+                  <img
+                    src="/icons/check-circle.svg"
+                    width="14"
+                    height="14"
+                    alt=""
+                    aria-hidden="true"
+                    style="vertical-align: -2px; margin-right: 4px"
+                  />
+                  Frame locked · {{ vm.points().length }} corners
+                </p>
+              } @else {
+                @switch (vm.currentStep()) {
+                  @case ('draw') {
+                    <p>Click the canvas to place corner points. You need at least 3.</p>
+                  }
+                  @case ('close') {
+                    <p>
+                      Click the <strong>first point</strong> (orange) to close the frame, or keep
+                      adding corners.
+                    </p>
+                  }
+                  @default {
+                    <p>Select an awning type first, then click the canvas to begin.</p>
+                  }
+                }
+              }
+            </div>
+
+          </div>
+        }
+
+        <!-- ── Panel 2: Measure ───────────────────────────────────────── -->
+        @case (2) {
+          <div class="panel-header">
+            <h2 class="panel-title">Measurements &amp; Angles</h2>
+            <p class="panel-subtitle">Enter real-world lengths and confirm corner angles.</p>
+          </div>
+          <div class="panel-body">
+            @if (vm.isClosed()) {
+              <div class="drawing-controls" style="margin-bottom: 14px">
+                <button type="button" class="btn btn--ghost btn--sm" (click)="vm.onUnlock()">
+                  <span class="icon icon--unlock" aria-hidden="true"></span>
+                  Unlock Frame to Edit
+                </button>
+              </div>
+
+              <p class="panel-section-label">Edge Lengths</p>
+              <app-measurement-panel
+                [edges]="vm.edges()"
+                (measurementChange)="vm.onMeasurementChange($event)"
+              />
+
+              <div class="panel-divider"></div>
+
+              <p class="panel-section-label">
+                Corner Angles
+                @if (!vm.hasNonRightAngles()) {
+                  <span class="title-hint">all right angles</span>
+                }
+              </p>
+              <app-corner-panel
+                [corners]="vm.corners()"
+                (angleChanged)="vm.onAngleChanged($event)"
+                (angleConfirmed)="vm.onAngleConfirmed($event)"
+                (cornerOverridden)="vm.onCornerOverridden($event)"
+              />
+
+              @if (vm.validationResult()) {
+                <div class="panel-divider"></div>
+                <p class="panel-section-label">Validation</p>
+                <app-validation-panel
+                  [result]="vm.validationResult()"
+                  (suggestionApplied)="vm.onSuggestionApplied($event)"
+                  (proceedAnyway)="vm.onProceedAnyway()"
+                />
+              }
+
+              @if (vm.canAdvance()) {
+                <div class="panel-divider"></div>
+                <button
+                  type="button"
+                  class="btn btn--confirm-layout"
+                  (click)="vm.nextPanel()"
+                >
+                  Confirm Measurements &amp; Continue
+                  <span class="icon icon--chevron-right" aria-hidden="true"></span>
+                </button>
+              }
+            } @else {
+              <div class="instructions">
+                <p>Draw and close the frame first — go back to the <strong>Draw</strong> step.</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ── Panel 3: Configure ─────────────────────────────────────── -->
+        @case (3) {
+          <div class="panel-header">
+            <h2 class="panel-title">Configure Layout</h2>
+            <p class="panel-subtitle">
+              Assign edge roles — or click edges directly on the drawing.
+            </p>
+          </div>
+          <div class="panel-body">
+            @if (vm.edges().length > 0) {
+              <p class="panel-section-label">Edge Roles</p>
+              <p class="config-hint">
+                Click an edge on the canvas to cycle its role, or use the buttons below. The
+                <strong>gutter</strong> edge is the front (where water drains).
+              </p>
+
+              <div class="edge-role-list" role="list">
+                @for (edge of vm.edges(); track edge.id) {
+                  <div class="edge-role-item" role="listitem">
+                    <div class="edge-role-meta">
+                      <span class="edge-role-label">{{ edge.label }}</span>
+                      @if (edge.realLengthMm) {
+                        <span class="edge-role-length"
+                          >{{ (edge.realLengthMm / 1000).toFixed(2) }}m</span
+                        >
+                      }
+                    </div>
+                    <div
+                      class="edge-role-buttons"
+                      role="group"
+                      [attr.aria-label]="'Role for edge ' + edge.label"
+                    >
+                      @for (opt of vm.edgeRoleOptions; track opt.value) {
+                        <button
+                          type="button"
+                          [class]="
+                            'role-btn role-btn--' +
+                            opt.value +
+                            (vm.getEdgeRole(edge.id) === opt.value ? ' role-btn--active' : '')
+                          "
+                          (click)="vm.onSetEdgeRole(edge.id, opt.value)"
+                          [attr.aria-pressed]="vm.getEdgeRole(edge.id) === opt.value"
+                          [style.--role-color]="opt.color"
+                        >
+                          {{ opt.label }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <div class="panel-divider"></div>
+              <p class="panel-section-label">Fall Direction</p>
+              <div class="field-group">
+                <label for="wz-fall-direction" class="field-label">
+                  Water drains toward <span class="field-hint">(blank = auto from gutter)</span>
+                </label>
+                <select
+                  id="wz-fall-direction"
+                  class="field-input"
+                  (change)="vm.onFallDirectionChange($event)"
+                >
+                  <option value="" [selected]="!vm.awningConfig().fallToEdgeId">
+                    Auto (from gutter role)
+                  </option>
+                  @for (edge of vm.edges(); track edge.id) {
+                    <option [value]="edge.id" [selected]="vm.awningConfig().fallToEdgeId === edge.id">
+                      {{ edge.label
+                      }}{{
+                        edge.realLengthMm ? ' · ' + (edge.realLengthMm / 1000).toFixed(2) + 'm' : ''
+                      }}
+                    </option>
+                  }
+                </select>
+              </div>
+
+              @if (vm.awningType() === 'IBR') {
+                <div class="panel-divider"></div>
+                <p class="panel-section-label">Purlins</p>
+                <div class="field-group">
+                  <label for="wz-purlin-override" class="field-label"
+                    >Count override <span class="field-hint">(blank = auto)</span></label
+                  >
+                  <input
+                    id="wz-purlin-override"
+                    type="number"
+                    class="field-input"
+                    min="1"
+                    max="30"
+                    [value]="vm.awningConfig().purlinCountOverride ?? ''"
+                    (input)="vm.onPurlinOverrideInput($event)"
+                    placeholder="Auto"
+                  />
+                </div>
+              }
+              <div class="panel-divider"></div>
+
+              <button
+                type="button"
+                class="btn btn--confirm-layout"
+                (click)="vm.onConfirmLayout()"
+              >
+                Confirm Layout &amp; Continue
+                <span class="icon icon--chevron-right" aria-hidden="true"></span>
+              </button>
+            } @else {
+              <div class="instructions">
+                <p>Complete the measurement step first.</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ── Panel 4: Calculate ─────────────────────────────────────── -->
+        @case (4) {
+          <div class="panel-header">
+            <h2 class="panel-title">Material Settings</h2>
+            <p class="panel-subtitle">Configure pricing and run the estimate.</p>
+          </div>
+          <div class="panel-body">
+            <app-material-settings-panel
+              [awningType]="vm.awningType()"
+              [ibrSettings]="vm.ibrSettings()"
+              [louverSettings]="vm.louverSettings()"
+              (ibrSettingsChange)="vm.onIbrSettingsChange($event)"
+              (louverSettingsChange)="vm.onLouverSettingsChange($event)"
+            />
+
+            <div class="panel-divider"></div>
+
+            <button
+              type="button"
+              class="btn btn--primary"
+              [disabled]="!vm.canCalculate()"
+              (click)="vm.onCalculate()"
+            >
+              Calculate Materials
+            </button>
+
+            @if (!vm.canCalculate()) {
+              <p class="validation-hint" aria-live="polite">{{ vm.validationMessage() }}</p>
+            }
+          </div>
+        }
+
+        <!-- ── Panel 5: Results ───────────────────────────────────────── -->
+        @case (5) {
+          <div class="panel-header">
+            <h2 class="panel-title">Estimate Results</h2>
+            <p class="panel-subtitle">Review the material breakdown and cost.</p>
+          </div>
+          <div class="panel-body">
+            @if (vm.estimate()) {
+              <app-estimate-summary [estimate]="vm.estimate()!" />
+
+              <div class="panel-divider"></div>
+
+              <button
+                type="button"
+                class="btn btn--outline"
+                disabled
+                title="Export coming in a future version"
+                aria-disabled="true"
+              >
+                Export Estimate
+              </button>
+
+              <div class="new-drawing-action">
+                <button type="button" class="btn btn--new-drawing" (click)="vm.onReset()">
+                  <span class="icon icon--refresh" aria-hidden="true"></span>
+                  Start New Drawing
+                </button>
+              </div>
+            } @else {
+              <div class="instructions">
+                <p>Go back to <strong>Calculate</strong> and run the estimate first.</p>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>

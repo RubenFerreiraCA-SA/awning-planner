@@ -1,0 +1,211 @@
+    <section class="sidebar-section" aria-label="Project setup">
+      <h2 class="section-title">Project Setup</h2>
+      <app-project-setup-view
+        [selectedType]="vm.awningType()"
+        [customerName]="vm.customerName()"
+        [projectName]="vm.projectName()"
+        (typeChange)="vm.onTypeChange($event)"
+        (customerNameChange)="vm.onCustomerNameChange($event)"
+        (projectNameChange)="vm.onProjectNameChange($event)"
+      />
+    </section>
+
+    @if (vm.points().length > 0) {
+      <section class="sidebar-section" aria-label="Drawing controls">
+        <div class="drawing-controls">
+          @if (!vm.isClosed() && vm.canUndo()) {
+            <button type="button" class="btn btn--ghost btn--sm" (click)="vm.onUndo()">
+              <span class="icon icon--undo" aria-hidden="true"></span>
+              Undo Last Point
+            </button>
+          }
+          @if (vm.isClosed()) {
+            <button type="button" class="btn btn--ghost btn--sm" (click)="vm.onUnlock()">
+              <span class="icon icon--unlock" aria-hidden="true"></span>
+              Unlock Frame to Edit
+            </button>
+          }
+        </div>
+      </section>
+    }
+
+    @if (vm.isClosed()) {
+      <section class="sidebar-section" aria-label="Edge measurements">
+        <h2 class="section-title">Edge Measurements</h2>
+        <app-measurement-panel
+          [edges]="vm.edges()"
+          (measurementChange)="vm.onMeasurementChange($event)"
+        />
+      </section>
+
+      <section class="sidebar-section" aria-label="Corner angles">
+        <h2 class="section-title">
+          Corner Angles
+          @if (!vm.hasNonRightAngles()) {
+            <span class="title-hint">all right angles</span>
+          }
+        </h2>
+        <app-corner-panel
+          [corners]="vm.corners()"
+          (angleChanged)="vm.onAngleChanged($event)"
+          (angleConfirmed)="vm.onAngleConfirmed($event)"
+          (cornerOverridden)="vm.onCornerOverridden($event)"
+        />
+      </section>
+
+      @if (vm.validationResult()) {
+        <section class="sidebar-section" aria-label="Shape validation">
+          <h2 class="section-title">Validation</h2>
+          <app-validation-panel
+            [result]="vm.validationResult()"
+            (suggestionApplied)="vm.onSuggestionApplied($event)"
+            (proceedAnyway)="vm.onProceedAnyway()"
+          />
+        </section>
+      }
+
+      <section class="sidebar-section" aria-label="Edge role configuration">
+        <h2 class="section-title">Configure Edges</h2>
+        <div class="edge-role-list" role="list">
+          @for (edge of vm.edges(); track edge.id) {
+            <div class="edge-role-item" role="listitem">
+              <div class="edge-role-meta">
+                <span class="edge-role-label">{{ edge.label }}</span>
+                @if (edge.realLengthMm) {
+                  <span class="edge-role-length">{{ (edge.realLengthMm / 1000).toFixed(2) }}m</span>
+                }
+              </div>
+              <div
+                class="edge-role-buttons"
+                role="group"
+                [attr.aria-label]="'Role for edge ' + edge.label"
+              >
+                @for (opt of vm.edgeRoleOptions; track opt.value) {
+                  <button
+                    type="button"
+                    [class]="
+                      'role-btn role-btn--' +
+                      opt.value +
+                      (vm.getEdgeRole(edge.id) === opt.value ? ' role-btn--active' : '')
+                    "
+                    (click)="vm.onSetEdgeRole(edge.id, opt.value)"
+                    [attr.aria-pressed]="vm.getEdgeRole(edge.id) === opt.value"
+                    [style.--role-color]="opt.color"
+                  >
+                    {{ opt.label }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+        <div class="field-group" style="margin-top: 12px">
+          <label for="sc-fall-direction" class="field-label">
+            Fall direction <span class="field-hint">(blank = auto)</span>
+          </label>
+          <select
+            id="sc-fall-direction"
+            class="field-input"
+            (change)="vm.onFallDirectionChange($event)"
+          >
+            <option value="" [selected]="!vm.awningConfig().fallToEdgeId">
+              Auto (from gutter role)
+            </option>
+            @for (edge of vm.edges(); track edge.id) {
+              <option [value]="edge.id" [selected]="vm.awningConfig().fallToEdgeId === edge.id">
+                {{ edge.label
+                }}{{ edge.realLengthMm ? ' · ' + (edge.realLengthMm / 1000).toFixed(2) + 'm' : '' }}
+              </option>
+            }
+          </select>
+        </div>
+      </section>
+
+      <section class="sidebar-section sidebar-section--collapsible" aria-label="Material settings">
+        <details>
+          <summary class="section-title section-title--toggle">
+            Material Settings
+            <span class="toggle-icon" aria-hidden="true">&#9660;</span>
+          </summary>
+          <div class="section-body">
+            <app-material-settings-panel
+              [awningType]="vm.awningType()"
+              [ibrSettings]="vm.ibrSettings()"
+              [louverSettings]="vm.louverSettings()"
+              (ibrSettingsChange)="vm.onIbrSettingsChange($event)"
+              (louverSettingsChange)="vm.onLouverSettingsChange($event)"
+            />
+          </div>
+        </details>
+      </section>
+
+      <section class="sidebar-section" aria-label="Actions">
+        <div class="actions">
+          <button type="button" class="btn btn--secondary" (click)="vm.onReset()">
+            Reset Drawing
+          </button>
+          <button
+            type="button"
+            class="btn btn--primary"
+            [disabled]="!vm.canCalculate()"
+            (click)="vm.onCalculate()"
+            [attr.aria-describedby]="!vm.canCalculate() ? 'calc-hint' : null"
+          >
+            Calculate Materials
+          </button>
+        </div>
+        @if (!vm.canCalculate() && vm.currentStep() !== 'calculate') {
+          <p class="validation-hint" id="calc-hint" aria-live="polite">{{ vm.validationMessage() }}</p>
+        }
+      </section>
+    }
+
+    @if (vm.estimate()) {
+      <section class="sidebar-section" aria-label="Material estimate">
+        <h2 class="section-title section-title--success">Material Estimate</h2>
+        <app-estimate-summary [estimate]="vm.estimate()!" />
+      </section>
+
+      <section class="sidebar-section" aria-label="Actions">
+        <div class="actions">
+          <button type="button" class="btn btn--primary" title="Export coming in a future version">
+            Export Estimate
+          </button>
+        </div>
+        @if (!vm.canCalculate() && vm.currentStep() !== 'calculate') {
+          <p class="validation-hint" id="calc-hint" aria-live="polite">{{ vm.validationMessage() }}</p>
+        }
+      </section>
+    }
+
+    <section class="sidebar-section" aria-live="polite" aria-label="Current instructions">
+      <h2 class="section-title">Instructions</h2>
+      <div class="instructions">
+        @switch (vm.currentStep()) {
+          @case ('select-type') {
+            <p>Select an awning type above to begin.</p>
+          }
+          @case ('draw') {
+            <p>
+              Click the drawing canvas to place corner points. Use <strong>Undo</strong> to remove
+              the last point.
+            </p>
+          }
+          @case ('close') {
+            <p>
+              Continue placing points. Click the <strong>first point</strong> (highlighted in
+              orange) to close the frame, or <strong>Undo</strong> to step back.
+            </p>
+          }
+          @case ('measure') {
+            <p>
+              Frame locked. Enter the real-world length for each edge, then confirm any
+              non-right-angle corners.
+            </p>
+          }
+          @default {
+            <p>Ready to calculate. Click <strong>Calculate Materials</strong> below.</p>
+          }
+        }
+      </div>
+    </section>

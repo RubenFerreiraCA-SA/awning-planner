@@ -1,0 +1,45 @@
+    <!-- Wizard footer navigation -->
+    <div class="wizard-footer">
+      @if (![0, 1, 2].includes(vm.panelIndex())) {
+      <div class="wizard-footer__nav">
+        <button
+          type="button"
+          class="btn btn--secondary wizard-nav-btn"
+          [disabled]="vm.panelIndex() === 0"
+          (click)="vm.prevPanel()"
+          aria-label="Previous step"
+        >
+          <span class="icon icon--chevron-left" aria-hidden="true"></span>
+          Back
+        </button>
+
+        <span class="wizard-footer__counter"
+          >{{ vm.panelIndex() + 1 }}&thinsp;/&thinsp;{{ vm.panelDefs.length }}</span
+        >
+
+        @if (vm.panelIndex() === 3) {
+          <div class="wizard-nav-btn--spacer"></div>
+        } @else if (vm.panelIndex() < vm.panelDefs.length - 1) {
+          <button
+            type="button"
+            class="btn btn--primary wizard-nav-btn"
+            [disabled]="!vm.canAdvance()"
+            (click)="vm.nextPanel()"
+            aria-label="Next step"
+          >
+            Next
+            <span class="icon icon--chevron-right" aria-hidden="true"></span>
+          </button>
+        } @else {
+          <div class="wizard-nav-btn--spacer"></div>
+        }
+      </div>
+      }
+
+
+      @if (!vm.canAdvance() && vm.panelIndex() < vm.panelDefs.length - 1 && vm.advanceHint()) {
+        <p class="wizard-advance-hint" aria-live="polite">
+          Instruction: {{ vm.advanceHint() }}
+        </p>
+      }
+    </div>
