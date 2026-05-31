@@ -1,60 +1,43 @@
 <div class="sidebar-header">
-  <div class="sidebar-logo" aria-hidden="true">
+  <div class="sidebar-logo">
     <span class="icon icon--logo"></span>
   </div>
 
   <h1 class="sidebar-title">Awning Planner</h1>
-
-  <div class="header-spacer"></div>
-
-  <button
-    type="button"
-    class="view-toggle"
-    (click)="vm.toggleViewMode()"
-    [attr.aria-label]="vm.wizardMode() ? 'Switch to full scroll view' : 'Switch to step-by-step view'"
-    [title]="vm.wizardMode() ? 'Show all sections' : 'Step-by-step view'"
-  >
-    @if (vm.wizardMode()) {
-      <span class="icon icon--view-list" aria-hidden="true"></span>
-      <span>All</span>
-    } @else {
-      <span class="icon icon--view-steps" aria-hidden="true"></span>
-      <span>Steps</span>
-    }
-  </button>
 </div>
 
-@if (vm.wizardMode()) {
-  <nav class="wizard-progress" aria-label="Wizard steps">
-    @for (panel of vm.panelDefs; track panel.label; let i = $index) {
-      <button
-        type="button"
-        class="wp-step"
-        [class.wp-step--active]="vm.panelIndex() === i"
-        [class.wp-step--done]="vm.panelIndex() > i"
-        (click)="vm.panelIndex() > i ? vm.setPanel(i) : null"
-        [attr.aria-current]="vm.panelIndex() === i ? 'step' : null"
-        [attr.aria-label]="panel.label + (vm.panelIndex() > i ? ' (complete)' : vm.panelIndex() === i ? ' (current)' : '')"
-        [attr.title]="panel.hint"
-        [style.cursor]="vm.panelIndex() > i ? 'pointer' : 'default'"
-      >
-        <span class="wp-step__bubble" aria-hidden="true">
-          @if (vm.panelIndex() > i) {
-            <img src="/icons/check-bubble.svg" width="10" height="10" alt="" />
-          } @else {
-            {{ i + 1 }}
-          }
-        </span>
-        <span class="wp-step__label">{{ panel.label }}</span>
-      </button>
+<nav class="wizard-progress" aria-label="Wizard steps">
+  @for (panel of vm.panelDefs; track panel.label; let i = $index) {
+    <button
+      type="button"
+      class="wp-step"
+      [class.wp-step--active]="vm.panelIndex() === i"
+      [class.wp-step--done]="vm.panelIndex() > i"
+      (click)="vm.panelIndex() > i ? vm.setPanel(i) : null"
+      [attr.aria-current]="vm.panelIndex() === i ? 'step' : null"
+      [attr.aria-label]="
+        panel.label +
+        (vm.panelIndex() > i ? ' (complete)' : vm.panelIndex() === i ? ' (current)' : '')
+      "
+      [attr.title]="panel.hint"
+      [style.cursor]="vm.panelIndex() > i ? 'pointer' : 'default'"
+    >
+      <span class="wp-step__bubble" aria-hidden="true">
+        @if (vm.panelIndex() > i) {
+          <img src="/icons/check-bubble.svg" width="10" height="10" alt="" />
+        } @else {
+          {{ i + 1 }}
+        }
+      </span>
+      <span class="wp-step__label">{{ panel.label }}</span>
+    </button>
 
-      @if (i < vm.panelDefs.length - 1) {
-        <div
-          class="wp-connector"
-          [class.wp-connector--done]="vm.panelIndex() > i"
-          aria-hidden="true"
-        ></div>
-      }
+    @if (i < vm.panelDefs.length - 1) {
+      <div
+        class="wp-connector"
+        [class.wp-connector--done]="vm.panelIndex() > i"
+        aria-hidden="true"
+      ></div>
     }
-  </nav>
-}
+  }
+</nav>

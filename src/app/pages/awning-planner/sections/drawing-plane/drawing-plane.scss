@@ -9,6 +9,7 @@
   height: 100%;
   overflow: hidden;
   background: #ffffff;
+
 }
 
 .plane-overlay {
@@ -23,7 +24,7 @@
   pointer-events: none;
 
   &--hint {
-    justify-content: flex-end;
+    justify-content: center;
     padding-bottom: 40px;
   }
 
